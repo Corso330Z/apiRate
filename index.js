@@ -10,6 +10,8 @@ app.use(cors());
 
 app.use(express.json());
 
+
+
 app.use("/filmes", routerFilmes)
 
 app.listen(porta, () => {
