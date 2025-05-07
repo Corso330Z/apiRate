@@ -5,7 +5,7 @@ export async function atualizarAvaliacao(perfilId, filmeId, like, dislike) {
     try {
         const sql = `
             UPDATE avaliacaoFilmes
-            SET like = ?, dislike = ?
+             SET \`like\` = ?, \`dislike\` = ?
             WHERE perfil_idperfil = ? AND filmes_idfilmes = ?
         `;
         const [result] = await conn.execute(sql, [like, dislike, perfilId, filmeId]);
