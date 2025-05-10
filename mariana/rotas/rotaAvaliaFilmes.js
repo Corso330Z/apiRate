@@ -9,10 +9,10 @@ const routerAvaliacaoFilmes = express.Router();
 
 
 routerAvaliacaoFilmes.post("/", upload.single('fotoFilme'), async (req, res) => {
-    const { perfil_idperfil, filmes_idfilmes, like, dislike } = req.body;
+    const { perfil_idperfil, filmes_idfilmes, positiva, negativa } = req.body;
     
     try {
-        const resultado = await inserirAvaliacao(perfil_idperfil, filmes_idfilmes, like, dislike);
+        const resultado = await inserirAvaliacao(perfil_idperfil, filmes_idfilmes, positiva, negativa);
         res.status(201).json(resultado);
     } catch (error) {
         res.status(400).json({
@@ -40,10 +40,10 @@ routerAvaliacaoFilmes.get('/:perfil_idperfil/:filmes_idfilmes', async (req, res)
 
 routerAvaliacaoFilmes.put("/:perfil_idperfil/:filmes_idfilmes", async (req, res) => {
     const { perfil_idperfil, filmes_idfilmes } = req.params;
-    const { like, dislike } = req.body;
+    const { positiva, negativa } = req.body;
 
     try {
-        const resultado = await atualizarAvaliacao(perfil_idperfil, filmes_idfilmes, like, dislike);
+        const resultado = await atualizarAvaliacao(perfil_idperfil, filmes_idfilmes, positiva, negativa);
         res.json(resultado);
     } catch (err) {
         res.status(400).json({ mensagem: err.message });
