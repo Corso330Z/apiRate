@@ -30,13 +30,13 @@ async function validarAtorCompleto({ nome, dataNasc, vivo }) {
   };
 }
 
-function validarAtorParcial(dados) {
+function validarAtorParcial(camposAtualizar) {
   const erros = [];
 
-  if (dados.nome && typeof dados.nome !== 'string') erros.push("O nome deve ser uma string.");
-  if (dados.dataNasc && isNaN(Date.parse(dados.dataNasc))) erros.push("A data de nascimento é inválida.");
-  if (dados.vivo && isNaN(parseInt(dados.vivo))) erros.push("A opção se o ator está vivo deve ser escolhida, com 1 para vivo e 0 para morto.");
-  if (vivo < 0 || vivo > 1) {
+  if (camposAtualizar.nome && typeof camposAtualizar.nome !== 'string') erros.push("O nome deve ser uma string.");
+  if (camposAtualizar.dataNasc && isNaN(Date.parse(camposAtualizar.dataNasc))) erros.push("A data de nascimento é inválida.");
+  if (camposAtualizar.vivo && isNaN(parseInt(camposAtualizar.vivo))) erros.push("A opção se o ator está vivo deve ser escolhida, com 1 para vivo e 0 para morto.");
+  if (camposAtualizar.vivo < 0 || camposAtualizar.vivo > 1) {
     erros.push("A opção é inválida. 1 - vivo ou 0 - morto.");
   }
   return {

@@ -23,8 +23,13 @@ routerFilmes.post("/", upload.single('fotoFilme'), async (req, res) => {
   }
 
   try {
-    await adicionarFilme(nome, dataLanc, sinopse, classInd, fotoFilme);
-    return res.status(201).json({ mensagem: "Filme adicionado com sucesso." });
+    const resultado = await adicionarFilme(nome, dataLanc, sinopse, classInd, fotoFilme);
+    if (resultado[0].affectedRows > 0) {
+      return res.status(201).json({ mensagem: "Filme adicionado com sucesso." });
+    } else {
+      return res.status(404).json({ mensagem: "Não foi possivel, adicionar filme." });
+    }
+
   } catch (error) {
     return res.status(500).json({
       mensagem: "Erro ao adicionar filme.",

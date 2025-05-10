@@ -16,7 +16,7 @@ async function executarQuery(sql, params = []) {
 
 async function buscarAtor() {
     try {
-        const sql = `SELECT idatores, nome, dataNasc, vivo, fotoAtor FROM atores`;
+        const sql = `SELECT idatores, nome, dataNasc, vivo FROM atores`;
         return await executarQuery(sql);
     } catch (error) {
         console.error(error);
@@ -25,7 +25,7 @@ async function buscarAtor() {
 
 async function buscarAtorPorId(id) {
     try {
-        const sql = `SELECT idatores, nome, dataNasc, vivo, fotoAtor FROM atores WHERE idatores = ?`;
+        const sql = `SELECT idatores, nome, dataNasc, vivo FROM atores WHERE idatores = ?`;
         return await executarQuery(sql, [id]);
     } catch (error) {
         console.error(error);
@@ -34,7 +34,7 @@ async function buscarAtorPorId(id) {
 
 async function buscarAtorPorNome(nome) {
     try {
-        const sql = `SELECT idatores, nome, dataNasc, vivo, fotoAtor FROM atores WHERE nome LIKE ?`;
+        const sql = `SELECT idatores, nome, dataNasc, vivo FROM atores WHERE nome LIKE ?`;
         return await executarQuery(sql, [`%${nome}%`]);
     } catch (error) {
         console.error(error);

@@ -23,8 +23,13 @@ routerAtores.post("/", upload.single('fotoAtor'), async (req, res) => {
   }
 
   try {
-    await adicionarAtor(nome, dataNasc, vivo, fotoAtor);
-    return res.status(201).json({ mensagem: "Ator adicionado com sucesso." });
+    const resultado = await adicionarAtor(nome, dataNasc, vivo, fotoAtor);
+    //console.log(resultado)
+    if (resultado[0].affectedRows > 0) {
+        return res.status(201).json({ mensagem: "Ator adicionado com sucesso." });
+    } else {
+      return res.status(404).json({ mensagem: "Não foi possivel, adicionar ator." });
+    }
   } catch (error) {
     return res.status(500).json({
       mensagem: "Erro ao adicionar ator.",
@@ -73,7 +78,6 @@ routerAtores.patch("/:id", upload.single('fotoAtor'), async (req, res) => {
   const { id } = req.params;
   const { nome, dataNasc, vivo } = req.body;
   const fotoAtor = req.file ? req.file.buffer : null;
-
   const camposAtualizar = {};
   if (nome) camposAtualizar.nome = nome;
   if (dataNasc) camposAtualizar.dataNasc = dataNasc;
@@ -86,7 +90,6 @@ routerAtores.patch("/:id", upload.single('fotoAtor'), async (req, res) => {
       codigo: "NO_UPDATE_DATA"
     });
   }
-
   const { valido, erros } = validarAtorParcial(camposAtualizar);
   if (!valido) {
     return res.status(400).json({
@@ -157,7 +160,7 @@ routerAtores.get("/:id", async (req, res) => {
   }
 });
 
-routerAtores.get("/imagem/:id", async (req, res) => {
+routerAtores.get("/fotoAtor/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -186,8 +189,8 @@ routerAtores.delete("/:id", async (req, res) => {
 
   try {
     const resultado = await deletarAtor(id);
-
-    if (resultado.affectedRows === 0) {
+    console.log(resultado)
+    if (resultado.affectedRows == 0) {
       return res.status(404).json({
         mensagem: "Ator não encontrado.",
         codigo: "ATOR_NOT_FOUND"
