@@ -13,13 +13,13 @@ async function executarQuery(sql, params = []) {
     }
 }
 
-async function deletarAtor(id) {
+async function deletarGenero(id) {
     try {
-        const sql = `DELETE FROM atores WHERE idatores = ?`;
+        const sql = `DELETE FROM generos WHERE idgeneros = ?`;
         return await executarQuery(sql, [id]);
     } catch (error) {
         console.error(error);
     }
 }
 
-export { deletarAtor }
+export { deletarGenero }

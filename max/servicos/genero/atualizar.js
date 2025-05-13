@@ -19,11 +19,11 @@ async function executarQuery(sql, params = []) {
 }
 
 
-async function atualizarGeneroPut(nome, dataNasc, vivo, fotoAtor, id) {
+async function atualizarGeneroPut(nome,) {
     //console.log({ nome, dataLanc, sinopse, classInd, fotoFilme, id });
     try {
-        const sql = `UPDATE atores SET classInd = ?, dataLanc = ?, sinopse = ? , fotoFilme = ?, nomeFilme = ? WHERE idatores = ?`;
-        return await executarQuery(sql,[classInd, dataLanc, sinopse, fotoFilme, nomeFilme]);
+        const sql = `UPDATE generos SET nome = ? WHERE idgeneros = ?`;
+        return await executarQuery(sql,[nome]);
     } catch (error) {
         console.error(error);
     }
@@ -32,7 +32,7 @@ async function atualizarGeneroPut(nome, dataNasc, vivo, fotoAtor, id) {
 async function atualizarGeneroPatch(id, campos) {
     const colunas = Object.keys(campos).map(campo => `${campo} = ?`).join(", ");
     const valores = Object.values(campos);
-    const sql = `UPDATE atores SET ${colunas} WHERE idatores = ?;`
+    const sql = `UPDATE generos SET ${colunas} WHERE idgeneros = ?;`
     valores.push(id);
     return await executarQuery(sql, valores);
 }

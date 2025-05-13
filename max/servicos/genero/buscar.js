@@ -16,7 +16,7 @@ async function executarQuery(sql, params = []) {
 
 async function buscarGenero() {
     try {
-        const sql = `SELECT idatores, nome, dataNasc, vivo FROM atores`;
+        const sql = `SELECT idgeneros, nome,  FROM generos`;
         return await executarQuery(sql);
     } catch (error) {
         console.error(error);
