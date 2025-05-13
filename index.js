@@ -7,6 +7,7 @@ import routerAvaliacaoFilmes from "./mariana/rotas/rotaAvaliaFilmes.js"
 import routerProdutor from "./isa/rotas/rotaProdutor.js";
 import routerAtores from "./corso/rotas/rotaAtores.js";
 import routerAtoresFilmes from "./corso/rotas/rotaAtoresFilmes.js";
+import routerAvaliacaoComentarios from "./mariana/rotas/rotaAvaliaComen.js";
 
 const porta = 9000;
 const app = express();
@@ -21,6 +22,7 @@ app.use("/avaliacaoFilmes", routerAvaliacaoFilmes)
 app.use("/produtor", routerProdutor)
 app.use("/atores", routerAtores)
 app.use("/atoresFilmes", routerAtoresFilmes)
+app.use("/avaliacaoComentarios", routerAvaliacaoComentarios)
 
 app.listen(porta, () => {
     const data = new Date();
