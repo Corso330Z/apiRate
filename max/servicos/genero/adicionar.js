@@ -16,7 +16,7 @@ async function executarQuery(sql, params = []) {
 async function adicionarGenero(classInd, dataLanc, sinopse, fotoFilme, nomeFilme) {
     try{        
         //console.log(nome, dataNasc, vivo, fotoAtor)
-        const sql = `INSERT INTO atores (nclassInd, dataLanc, sinopse, fotoFilme, nomeFilme) VALUES (?, ?, ?, ?);`;
+        const sql = `INSERT INTO genero (classInd, dataLanc, sinopse, fotoFilme, nomeFilme) VALUES (?, ?, ?, ?);`;
         return await executarQuery(sql, [classInd, dataLanc, sinopse, fotoFilme, nomeFilme]);
     } catch(error) {
         console.error(error);
