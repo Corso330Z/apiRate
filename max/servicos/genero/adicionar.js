@@ -13,7 +13,7 @@ async function executarQuery(sql, params = []) {
     }
 }
 
-async function adicionarGenero(classInd, dataLanc, sinopse, fotoFilme, nomeFilme) {
+async function adicionarGenero(nome) {
     try{        
         //console.log(nome, dataNasc, vivo, fotoAtor)
         const sql = `INSERT INTO generos (nome) VALUES (?);`;

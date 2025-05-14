@@ -1,4 +1,5 @@
 import { buscarGenero } from "../servicos/genero/buscar";
+import { buscarFilmesGenero } from "../servicos/generoFilme/generoFilme";
 
 async function validarGenero({ nome }) {
   const erros = [];
@@ -7,9 +8,9 @@ async function validarGenero({ nome }) {
     erros.push("O nome é obrigatório e deve ser uma string.");
   } else {
     // Verifica se já existe um genero com o mesmo nome
-    const atoresExistentes = await buscarAtorPorNome(nome);
-    if (atoresExistentes.length > 0) {
-      erros.push("Já existe um ator com esse nome cadastrado.");
+    const generoExistentes = await buscarFilmesGenero(nome);
+    if (generoExistentes.length > 0) {
+      erros.push("Já existe um gênero com esse nome cadastrado.");
     }
   }
 }
