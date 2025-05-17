@@ -6,9 +6,59 @@ import { deletarFilme } from "../servicos/filmes/deletar.js";
 import { editarFilmePut, editarFilmePatch } from "../servicos/filmes/editar.js";
 import { validarFilmeCompleto, validarFilmeParcial } from "../validacao/validacaoFilmes.js";
 
+import { verifyToken, isAdmin } from "../../middlewares/verifyToken.js"
+
 const routerFilmes = express.Router();
 
-routerFilmes.post("/", upload.single('fotoFilme'), async (req, res) => {
+/**
+ * @swagger
+ * tags:
+ *   name: Filmes
+ *   description: Endpoints para gerenciamento de filmes
+ */
+
+
+/**
+ * @swagger
+ * /filmes:
+ *   post:
+ *     summary: Adiciona um novo filme
+ *     tags: [Filmes]
+ *     consumes:
+ *       - multipart/form-data
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nome
+ *               - dataLanc
+ *               - sinopse
+ *               - classInd
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               dataLanc:
+ *                 type: string
+ *                 format: date
+ *               sinopse:
+ *                 type: string
+ *               classInd:
+ *                 type: string
+ *               fotoFilme:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Filme adicionado com sucesso
+ *       400:
+ *         description: Erro de validação dos dados
+ *       500:
+ *         description: Erro interno ao adicionar filme
+ */
+routerFilmes.post("/", verifyToken, isAdmin, upload.single('fotoFilme'), async (req, res) => {
   const { nome, dataLanc, sinopse, classInd } = req.body;
   const fotoFilme = req.file ? req.file.buffer : null;
 
@@ -39,7 +89,55 @@ routerFilmes.post("/", upload.single('fotoFilme'), async (req, res) => {
   }
 });
 
-routerFilmes.put("/:id", upload.single('fotoFilme'), async (req, res) => {
+/**
+ * @swagger
+ * /filmes/{id}:
+ *   put:
+ *     summary: Atualiza todos os dados de um filme
+ *     tags: [Filmes]
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nome
+ *               - dataLanc
+ *               - sinopse
+ *               - classInd
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               dataLanc:
+ *                 type: string
+ *                 format: date
+ *               sinopse:
+ *                 type: string
+ *               classInd:
+ *                 type: string
+ *               fotoFilme:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Filme atualizado com sucesso
+ *       400:
+ *         description: Erro de validação dos dados
+ *       404:
+ *         description: Filme não encontrado
+ *       500:
+ *         description: Erro ao atualizar filme
+ */
+routerFilmes.put("/:id", verifyToken, isAdmin, upload.single('fotoFilme'), async (req, res) => {
   const { id } = req.params;
   const { nome, dataLanc, sinopse, classInd } = req.body;
   const fotoFilme = req.file ? req.file.buffer : null;
@@ -74,7 +172,50 @@ routerFilmes.put("/:id", upload.single('fotoFilme'), async (req, res) => {
   }
 });
 
-routerFilmes.patch("/:id", upload.single('fotoFilme'), async (req, res) => {
+/**
+ * @swagger
+ * /filmes/{id}:
+ *   patch:
+ *     summary: Atualiza parcialmente os dados de um filme
+ *     tags: [Filmes]
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               dataLanc:
+ *                 type: string
+ *                 format: date
+ *               sinopse:
+ *                 type: string
+ *               classInd:
+ *                 type: string
+ *               fotoFilme:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Filme atualizado com sucesso
+ *       400:
+ *         description: Erro de validação dos dados parciais
+ *       404:
+ *         description: Filme não encontrado
+ *       500:
+ *         description: Erro ao atualizar filme
+ */
+routerFilmes.patch("/:id", verifyToken, isAdmin, upload.single('fotoFilme'), async (req, res) => {
   const { id } = req.params;
   const { nome, dataLanc, sinopse, classInd } = req.body;
   const fotoFilme = req.file ? req.file.buffer : null;
@@ -122,6 +263,25 @@ routerFilmes.patch("/:id", upload.single('fotoFilme'), async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /filmes:
+ *   get:
+ *     summary: Lista todos os filmes ou busca por nome
+ *     tags: [Filmes]
+ *     parameters:
+ *       - in: query
+ *         name: nome
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: Nome do filme para busca
+ *     responses:
+ *       200:
+ *         description: Lista de filmes
+ *       500:
+ *         description: Erro ao buscar filmes
+ */
 routerFilmes.get("/", async (req, res) => {
   const { nome } = req.query;
 
@@ -140,6 +300,26 @@ routerFilmes.get("/", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /filmes/{id}:
+ *   get:
+ *     summary: Busca um filme pelo ID
+ *     tags: [Filmes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Filme encontrado
+ *       404:
+ *         description: Filme não encontrado
+ *       500:
+ *         description: Erro ao buscar o filme
+ */
 routerFilmes.get("/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -163,6 +343,31 @@ routerFilmes.get("/:id", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /filmes/imagem/{id}:
+ *   get:
+ *     summary: Busca a imagem de um filme pelo ID
+ *     tags: [Filmes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Retorna a imagem do filme
+ *         content:
+ *           image/jpeg:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       404:
+ *         description: Imagem não encontrada
+ *       500:
+ *         description: Erro ao buscar imagem do filme
+ */
 routerFilmes.get("/imagem/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -187,7 +392,27 @@ routerFilmes.get("/imagem/:id", async (req, res) => {
   }
 });
 
-routerFilmes.delete("/:id", async (req, res) => {
+/**
+ * @swagger
+ * /filmes/{id}:
+ *   delete:
+ *     summary: Deleta um filme pelo ID
+ *     tags: [Filmes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Filme deletado com sucesso
+ *       404:
+ *         description: Filme não encontrado
+ *       500:
+ *         description: Erro ao deletar filme
+ */
+routerFilmes.delete("/:id", verifyToken, isAdmin, async (req, res) => {
   const { id } = req.params;
 
   try {

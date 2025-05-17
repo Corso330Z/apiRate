@@ -6,8 +6,45 @@ import { deletarProdutor } from "../servicos/produtor/deletar.js";
 import { validarProdutorCompleto, validarProdutorParcial } from "../validacao/validacaoProdutor.js";
 const routerProdutor = express.Router();
 
+import { verifyToken, isAdmin } from "../../middlewares/verifyToken.js"
 
-routerProdutor.post("/", async (req, res) => {
+
+
+/**
+ * @swagger
+ * tags:
+ *   name: Produtores
+ *   description: Endpoints para gerenciamento de produtores
+ */
+
+/**
+ * @swagger
+ * /produtores:
+ *   post:
+ *     summary: Adiciona um novo produtor
+ *     tags: [Produtores]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nome
+ *             properties:
+ *               nome:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Produtor adicionado com sucesso
+ *       400:
+ *         description: Erro de validação dos dados
+ *       500:
+ *         description: Erro interno ao adicionar o produtor
+ */
+routerProdutor.post("/", verifyToken, isAdmin, async (req, res) => {
   const { nome } = req.body;
 
   const { valido, erros } = await validarProdutorCompleto(nome);
@@ -32,7 +69,43 @@ routerProdutor.post("/", async (req, res) => {
   }
 });
 
-routerProdutor.put("/:id", async (req, res) => {
+/**
+ * @swagger
+ * /produtores/{id}:
+ *   put:
+ *     summary: Atualiza completamente um produtor
+ *     tags: [Produtores]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do produtor
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nome
+ *             properties:
+ *               nome:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Produtor atualizado com sucesso
+ *       400:
+ *         description: Erro de validação dos dados
+ *       404:
+ *         description: Produtor não encontrado
+ *       500:
+ *         description: Erro interno ao atualizar o produtor
+ */
+routerProdutor.put("/:id", verifyToken, isAdmin, async (req, res) => {
   const { id } = req.params;
   const { nome } = req.body;
 
@@ -67,6 +140,24 @@ routerProdutor.put("/:id", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /produtores:
+ *   get:
+ *     summary: Lista todos os produtores ou busca por nome
+ *     tags: [Produtores]
+ *     parameters:
+ *       - in: query
+ *         name: nome
+ *         schema:
+ *           type: string
+ *         description: Nome do produtor para busca
+ *     responses:
+ *       200:
+ *         description: Lista de produtores retornada com sucesso
+ *       500:
+ *         description: Erro ao buscar os produtores
+ */
 routerProdutor.get("/", async (req, res) => {
   const { nome } = req.query;
 
@@ -85,6 +176,27 @@ routerProdutor.get("/", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /produtores/{id}:
+ *   get:
+ *     summary: Busca um produtor pelo ID
+ *     tags: [Produtores]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do produtor
+ *     responses:
+ *       200:
+ *         description: Produtor encontrado com sucesso
+ *       404:
+ *         description: Produtor não encontrado
+ *       500:
+ *         description: Erro ao buscar o produtor
+ */
 routerProdutor.get("/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -108,7 +220,30 @@ routerProdutor.get("/:id", async (req, res) => {
   }
 });
 
-routerProdutor.delete("/:id", async (req, res) => {
+/**
+ * @swagger
+ * /produtores/{id}:
+ *   delete:
+ *     summary: Deleta um produtor pelo ID
+ *     tags: [Produtores]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do produtor
+ *     responses:
+ *       200:
+ *         description: Produtor deletado com sucesso
+ *       404:
+ *         description: Produtor não encontrado
+ *       500:
+ *         description: Erro ao deletar o produtor
+ */
+routerProdutor.delete("/:id", verifyToken, isAdmin, async (req, res) => {
   const { id } = req.params;
 
   try {

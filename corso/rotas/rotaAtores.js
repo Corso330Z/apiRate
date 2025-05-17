@@ -7,6 +7,8 @@ import { atualizarAtorPut, atualizarAtorPatch } from "../servicos/atores/atualiz
 import { validarAtorCompleto, validarAtorParcial } from "../validacao/validacaoAtores.js";
 import { deletarAtoresFilmesByAtor } from "../servicos/atoresFilmes/deletar.js";
 
+
+import { verifyToken, isAdmin } from "../../middlewares/verifyToken.js";
 const routerAtores = express.Router();
 
 /**
@@ -54,7 +56,7 @@ const routerAtores = express.Router();
  *       500:
  *         description: Erro interno no servidor
  */
-routerAtores.post("/", upload.single('fotoAtor'), async (req, res) => {
+routerAtores.post("/", verifyToken, isAdmin, upload.single('fotoAtor'), async (req, res) => {
   const { nome, dataNasc, vivo } = req.body;
   const fotoAtor = req.file ? req.file.buffer : null;
 
@@ -132,7 +134,7 @@ routerAtores.post("/", upload.single('fotoAtor'), async (req, res) => {
  *         description: Erro interno no servidor
  */
 
-routerAtores.put("/:id", upload.single('fotoAtor'), async (req, res) => {
+routerAtores.put("/:id", verifyToken, isAdmin, upload.single('fotoAtor'), async (req, res) => {
   const { id } = req.params;
   const { nome, dataNasc, vivo } = req.body;
   const fotoAtor = req.file ? req.file.buffer : null;
@@ -144,7 +146,7 @@ routerAtores.put("/:id", upload.single('fotoAtor'), async (req, res) => {
       mensagem: "Erro de validação dos dados.",
       codigo: "VALIDATION_ERROR",
       erro: erros
-    });
+    }); 
   }
 
   try {
@@ -211,7 +213,7 @@ routerAtores.put("/:id", upload.single('fotoAtor'), async (req, res) => {
  *         description: Erro interno no servidor
  */
 
-routerAtores.patch("/:id", upload.single('fotoAtor'), async (req, res) => {
+routerAtores.patch("/:id", verifyToken, isAdmin, upload.single('fotoAtor'), async (req, res) => {
   const { id } = req.params;
   const { nome, dataNasc, vivo } = req.body;
   const fotoAtor = req.file ? req.file.buffer : null;
@@ -276,7 +278,7 @@ routerAtores.patch("/:id", upload.single('fotoAtor'), async (req, res) => {
  *         description: Erro ao buscar atores
  */
 
-routerAtores.get("/", async (req, res) => {
+routerAtores.get("/",  async (req, res) => {
   const { nome } = req.query;
 
   try {
@@ -415,7 +417,7 @@ routerAtores.get("/fotoAtor/:id", async (req, res) => {
  *         description: Erro ao deletar ator
  */
 
-routerAtores.delete("/:id", async (req, res) => {
+routerAtores.delete("/:id", verifyToken, isAdmin, async (req, res) => {
   const { id } = req.params;
 
   try {

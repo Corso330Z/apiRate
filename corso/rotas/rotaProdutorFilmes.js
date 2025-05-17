@@ -16,6 +16,8 @@ import { adicionarAtorFilmes } from "../servicos/produtorFilmes/adicionar.js";
 
 import { validarCriacaoRelacaoProdutorFilme } from "../validacao/validacaoProdutorFilmes.js";
 
+import {verifyToken, isAdmin} from "../../middlewares/verifyToken.js"
+
 const routerProdutorFilmes = express.Router();
 
 /**
@@ -181,7 +183,7 @@ routerProdutorFilmes.get("/produtorFilme/:idFilme/:idProdutor", async (req, res)
  *       500:
  *         description: Erro interno ao criar a relação.
  */
-routerProdutorFilmes.post("/", validarCriacaoRelacaoProdutorFilme, async (req, res) => {
+routerProdutorFilmes.post("/", verifyToken, isAdmin, validarCriacaoRelacaoProdutorFilme, async (req, res) => {
   const { idFilme, idProdutor } = req.body;
 
   try {
@@ -220,7 +222,7 @@ routerProdutorFilmes.post("/", validarCriacaoRelacaoProdutorFilme, async (req, r
  *       500:
  *         description: Erro interno ao deletar as relações.
  */
-routerProdutorFilmes.delete("/filme/:idFilme", async (req, res) => {
+routerProdutorFilmes.delete("/filme/:idFilme", verifyToken, isAdmin, async (req, res) => {
   const { idFilme } = req.params;
   try {
     const resultado = await deletarProdutorFilmesByFilme(idFilme);
@@ -260,7 +262,7 @@ routerProdutorFilmes.delete("/filme/:idFilme", async (req, res) => {
  *       500:
  *         description: Erro interno ao deletar as relações.
  */
-routerProdutorFilmes.delete("/produtor/:idProdutor", async (req, res) => {
+routerProdutorFilmes.delete("/produtor/:idProdutor", verifyToken, isAdmin, async (req, res) => {
   const { idProdutor } = req.params;
   try {
     const resultado = await deletarProdutorFilmesByAtor(idProdutor);
@@ -305,7 +307,7 @@ routerProdutorFilmes.delete("/produtor/:idProdutor", async (req, res) => {
  *       500:
  *         description: Erro interno ao deletar a relação.
  */
-routerProdutorFilmes.delete("/:idFilme/:idProdutor", async (req, res) => {
+routerProdutorFilmes.delete("/:idFilme/:idProdutor", verifyToken, isAdmin, async (req, res) => {
   const { idFilme, idProdutor } = req.params;
   try {
     const resultado = await deletarProdutorFilmesByFilmeAndAtor(idFilme, idProdutor);

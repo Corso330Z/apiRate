@@ -16,6 +16,7 @@ import { adicionarAtorFilmes } from "../servicos/atoresFilmes/adicionar.js";
 
 import { validarCriacaoRelacaoAtorFilme } from "../validacao/validacaoAtoresFilmes.js";
 
+import {verifyToken, isAdmin} from "../../middlewares/verifyToken.js"
 
 const routerAtoresFilmes = express.Router();
 
@@ -186,7 +187,7 @@ routerAtoresFilmes.get("/atorFilme/:idFilme/:idAtor", async (req, res) => {
  *       500:
  *         description: Erro interno ao criar a relação.
  */
-routerAtoresFilmes.post("/", validarCriacaoRelacaoAtorFilme, async (req, res) => {
+routerAtoresFilmes.post("/", verifyToken, isAdmin, validarCriacaoRelacaoAtorFilme, async (req, res) => {
   const { idFilme, idAtor } = req.body;
 
   try {
@@ -226,7 +227,7 @@ routerAtoresFilmes.post("/", validarCriacaoRelacaoAtorFilme, async (req, res) =>
  *       500:
  *         description: Erro interno ao deletar as relações.
  */
-routerAtoresFilmes.delete("/filme/:idFilme", async (req, res) => {
+routerAtoresFilmes.delete("/filme/:idFilme", verifyToken, isAdmin, async (req, res) => {
   const { idFilme } = req.params;
   try {
     const resultado = await deletarAtoresFilmesByFilme(idFilme);
@@ -267,7 +268,7 @@ routerAtoresFilmes.delete("/filme/:idFilme", async (req, res) => {
  *       500:
  *         description: Erro interno ao deletar as relações.
  */
-routerAtoresFilmes.delete("/ator/:idAtor", async (req, res) => {
+routerAtoresFilmes.delete("/ator/:idAtor", verifyToken, isAdmin, async (req, res) => {
   const { idAtor } = req.params;
   try {
     const resultado = await deletarAtoresFilmesByAtor(idAtor);
@@ -312,7 +313,7 @@ routerAtoresFilmes.delete("/ator/:idAtor", async (req, res) => {
  *       500:
  *         description: Erro interno ao deletar a relação.
  */
-routerAtoresFilmes.delete("/atorFilme/:idFilme/:idAtor", async (req, res) => {
+routerAtoresFilmes.delete("/atorFilme/:idFilme/:idAtor", verifyToken, isAdmin, async (req, res) => {
   const { idFilme, idAtor } = req.params;
   try {
     const resultado = await deletarAtoresFilmesByFilmeAndAtor(idFilme, idAtor);
