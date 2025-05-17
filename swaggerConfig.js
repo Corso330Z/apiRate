@@ -5,8 +5,9 @@ const swaggerDefinition = {
     openapi: '3.0.0',
     info: {
         title: 'API do Rate',
-        version: '1.0.0',
+        version: '1.0.1',
         description: 'Documentação da API com Swagger',
+        
     },
     servers: [
         {
