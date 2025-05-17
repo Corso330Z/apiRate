@@ -14,7 +14,7 @@ const swaggerDefinition = {
             description: 'Servidor local',
         },
         {
-            url: 'http://localhost:9000',
+            url: 'https://rate.dev.vilhena.ifro.edu.br/api/',
             description: 'Servidor Online',
         }
     ],
