@@ -12,13 +12,19 @@ import routerAtores from "./corso/rotas/rotaAtores.js";
 import routerAtoresFilmes from "./corso/rotas/rotaAtoresFilmes.js";
 import routerAvaliacaoComentarios from "./mariana/rotas/rotaAvaliaComen.js";
 import routerAvaliacaoAtores from "./mariana/rotas/rotaAvaliaAtores.js";
+import routerProdutorFilmes from "./corso/rotas/rotaProdutorFilmes.js";
 const porta = 9000;
 const app = express();
 app.use(cors());
 
 app.use(express.json());
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    swaggerOptions: {
+        docExpansion: "none",              
+        defaultModelsExpandDepth: -1      
+    }
+}));
 
 app.use("/filmes", routerFilmes)
 app.use("/avaliacaoFilmes", routerAvaliacaoFilmes)
@@ -27,7 +33,7 @@ app.use("/atores", routerAtores)
 app.use("/atoresFilmes", routerAtoresFilmes)
 app.use("/avaliacaoComentarios", routerAvaliacaoComentarios)
 app.use("/avaliacaoAtores", routerAvaliacaoAtores)
-
+app.use("/produtorFilmes", routerProdutorFilmes)
 app.listen(porta, () => {
     const data = new Date();
     console.log(`Seridor iniciado na porta ${porta} ${data}`);

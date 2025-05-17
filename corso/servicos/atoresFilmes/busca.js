@@ -71,4 +71,15 @@ async function buscarAtoresDoFilme(idFilme) {
     }
 }
 
-export { buscarAtoresDoFilme, buscarAtoresFilmes, buscarFilmesDoAtor };
+async function buscarRelacaoDeAtorEFilme(idFilme, idAtor) {
+    try {
+        const sql = `
+            SELECT * FROM atoresFilmes WHERE filmes_idfilmes = ? AND atores_idatores = ?
+        `;
+        return await executarQuery(sql, [idFilme, idAtor]);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export { buscarAtoresDoFilme, buscarAtoresFilmes, buscarFilmesDoAtor, buscarRelacaoDeAtorEFilme };

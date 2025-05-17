@@ -5,6 +5,7 @@ import { buscarAtorPorId, buscarAtorPorNome, buscarAtor, buscarImagensAtorPorId 
 import { deletarAtor } from "../servicos/atores/deletar.js";
 import { atualizarAtorPut, atualizarAtorPatch } from "../servicos/atores/atualizar.js";
 import { validarAtorCompleto, validarAtorParcial } from "../validacao/validacaoAtores.js";
+import { deletarAtoresFilmesByAtor } from "../servicos/atoresFilmes/deletar.js";
 
 const routerAtores = express.Router();
 
@@ -418,8 +419,9 @@ routerAtores.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
+    await deletarAtoresFilmesByAtor(id)
     const resultado = await deletarAtor(id);
-    console.log(resultado)
+    //console.log(resultado)
     if (resultado.affectedRows == 0) {
       return res.status(404).json({
         mensagem: "Ator não encontrado.",
