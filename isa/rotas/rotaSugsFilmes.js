@@ -1,66 +1,55 @@
 import express from "express";
-import upload from '../../middlewares/upload.js';
-import { adicionarFilme } from "../servicos/sugsFilmes/adicionar.js";
-import { buscarFilmePorId, buscarFilmesPorNome, buscarFilmes, buscarImagensFilmePorId } from "../servicos/sugsFilmes/buscar.js";
-import { deletarFilme } from "../servicos/sugsFilmes/deletar.js";
-import { editarFilmePut, editarFilmePatch } from "../servicos/sugsFilmes/editar.js";
-import { validarFilmeCompleto, validarFilmeParcial } from "../validacao/validacaoFilmes.js";
+import { adicionarSugestaoFilme } from "../servicos/sugsFilmes/adicionar.js";
+import { buscarSugestaoFilmePorId, buscarSugestaoFilmePorNome, buscarSugestaoFilme } from "../servicos/sugsFilmes/buscar.js";
+import { deletarSugestaoFilme, deletarSugestaoFilmeAdm } from "../servicos/sugsFilmes/deletar.js";
+import { atualizarSugestaoFilmePut, atualizarSugestaoFilmePutAdm, atualizarSugestaoFilmePatch, atualizarSugestaoFilmePatchAdm } from "../servicos/sugsFilmes/atualizar.js";
+import { validarSugestaoFilmeCompleto } from "../validacao/validacaoSugsFilmes.js";
+import { verifyToken, isAdmin } from "../../middlewares/verifyToken.js";
 
-const routerFilmes = express.Router();
+const routerSugestaoFilmes = express.Router();
 
 /**
  * @swagger
  * tags:
- *   name: Filmes
- *   description: Endpoints para gerenciamento de filmes
+ *   - name: Sugestões de Filmes
+ *     description: Endpoints para gerenciar sugestões de filmes
  */
-
 
 /**
  * @swagger
- * /filmes:
+ * /sugestoesFilmes:
  *   post:
- *     summary: Adiciona um novo filme
- *     tags: [Filmes]
- *     consumes:
- *       - multipart/form-data
+ *     summary: Adiciona uma nova sugestão de filme
+ *     tags: [Sugestões de Filmes]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
- *         multipart/form-data:
+ *         application/json:
  *           schema:
  *             type: object
  *             required:
  *               - nome
- *               - dataLanc
  *               - sinopse
- *               - classInd
  *             properties:
  *               nome:
  *                 type: string
- *               dataLanc:
- *                 type: string
- *                 format: date
  *               sinopse:
  *                 type: string
- *               classInd:
- *                 type: string
- *               fotoFilme:
- *                 type: string
- *                 format: binary
  *     responses:
  *       201:
- *         description: Filme adicionado com sucesso
+ *         description: Sugestão de filme adicionada com sucesso
  *       400:
  *         description: Erro de validação dos dados
  *       500:
- *         description: Erro interno ao adicionar filme
+ *         description: Erro ao adicionar sugestão de filme
  */
-routerFilmes.post("/", upload.single('fotoFilme'), async (req, res) => {
-  const { nome, dataLanc, sinopse, classInd } = req.body;
-  const fotoFilme = req.file ? req.file.buffer : null;
+routerSugestaoFilmes.post("/", verifyToken, async (req, res) => {
+  const { id } = req.user;
+  const { nome, sinopse } = req.body;
 
-  const { valido, erros } = await validarFilmeCompleto({ nome, dataLanc, sinopse, classInd });
+  const { valido, erros } = await validarSugestaoFilmeCompleto({ nome, sinopse });
 
   if (!valido) {
     return res.status(400).json({
@@ -71,17 +60,17 @@ routerFilmes.post("/", upload.single('fotoFilme'), async (req, res) => {
   }
 
   try {
-    const resultado = await adicionarFilme(nome, dataLanc, sinopse, classInd, fotoFilme);
-    if (resultado[0].affectedRows > 0) {
-      return res.status(201).json({ mensagem: "Filme adicionado com sucesso." });
-    } else {
-      return res.status(404).json({ mensagem: "Não foi possivel, adicionar filme." });
-    }
+    const resultado = await adicionarSugestaoFilme(id, nome, sinopse);
 
+    if (resultado[0].affectedRows > 0) {
+      return res.status(201).json({ mensagem: "Sugestão de filme adicionada com sucesso." });
+    } else {
+      return res.status(404).json({ mensagem: "Não foi possível adicionar sugestão de filme." });
+    }
   } catch (error) {
     return res.status(500).json({
-      mensagem: "Erro ao adicionar filme.",
-      codigo: "ADD_FILME_ERROR",
+      mensagem: "Erro ao adicionar sugestão de filme.",
+      codigo: "ADD_SUGESTAO_FILME_ERROR",
       erro: error.message
     });
   }
@@ -89,58 +78,48 @@ routerFilmes.post("/", upload.single('fotoFilme'), async (req, res) => {
 
 /**
  * @swagger
- * /filmes/{id}:
+ * /sugestoesFilmes/{id}:
  *   put:
- *     summary: Atualiza todos os dados de um filme
- *     tags: [Filmes]
- *     consumes:
- *       - multipart/form-data
+ *     summary: Atualiza completamente uma sugestão (usuário comum)
+ *     tags: [Sugestões de Filmes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
- *         multipart/form-data:
+ *         application/json:
  *           schema:
  *             type: object
  *             required:
  *               - nome
- *               - dataLanc
  *               - sinopse
- *               - classInd
  *             properties:
  *               nome:
  *                 type: string
- *               dataLanc:
- *                 type: string
- *                 format: date
  *               sinopse:
  *                 type: string
- *               classInd:
- *                 type: string
- *               fotoFilme:
- *                 type: string
- *                 format: binary
  *     responses:
  *       200:
- *         description: Filme atualizado com sucesso
+ *         description: Sugestão de filme atualizada com sucesso
  *       400:
- *         description: Erro de validação dos dados
+ *         description: Erro de validação
  *       404:
- *         description: Filme não encontrado
+ *         description: Sugestão não encontrada
  *       500:
- *         description: Erro ao atualizar filme
+ *         description: Erro ao atualizar
  */
-routerFilmes.put("/:id", upload.single('fotoFilme'), async (req, res) => {
+routerSugestaoFilmes.put("/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
-  const { nome, dataLanc, sinopse, classInd } = req.body;
-  const fotoFilme = req.file ? req.file.buffer : null;
+  const idPerfil = req.user.id;
+  const { nome, sinopse } = req.body;
 
-  const { valido, erros } = await validarFilmeCompleto({ nome, dataLanc, sinopse, classInd });
+  const { valido, erros } = await validarSugestaoFilmeCompleto({ nome, sinopse });
 
   if (!valido) {
     return res.status(400).json({
@@ -151,287 +130,414 @@ routerFilmes.put("/:id", upload.single('fotoFilme'), async (req, res) => {
   }
 
   try {
-    const resultado = await editarFilmePut(nome, dataLanc, sinopse, classInd, fotoFilme, id);
+    const resultado = await atualizarSugestaoFilmePut(nome, sinopse, id, idPerfil);
 
     if (resultado.affectedRows === 0) {
       return res.status(404).json({
-        mensagem: "Filme não encontrado.",
-        codigo: "FILME_NOT_FOUND"
+        mensagem: "Sugestão de filme não encontrada.",
+        codigo: "SUGESTAO_FILME_NOT_FOUND"
       });
     }
 
-    return res.status(200).json({ mensagem: "Filme atualizado com sucesso." });
+    return res.status(200).json({ mensagem: "Sugestão de filme atualizada com sucesso." });
   } catch (error) {
     return res.status(500).json({
-      mensagem: "Erro ao atualizar filme.",
-      codigo: "UPDATE_FILME_ERROR",
+      mensagem: "Erro ao atualizar sugestão de filme.",
+      codigo: "UPDATE_SUGESTAO_FILME_ERROR",
       erro: error.message
     });
   }
 });
 
+// PATCH comum
 /**
  * @swagger
- * /filmes/{id}:
+ * /sugestoesFilmes/{id}:
  *   patch:
- *     summary: Atualiza parcialmente os dados de um filme
- *     tags: [Filmes]
- *     consumes:
- *       - multipart/form-data
+ *     summary: Atualiza parcialmente uma sugestão (usuário comum)
+ *     tags: [Sugestões de Filmes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *     requestBody:
- *       required: true
  *       content:
- *         multipart/form-data:
+ *         application/json:
  *           schema:
  *             type: object
  *             properties:
  *               nome:
  *                 type: string
- *               dataLanc:
- *                 type: string
- *                 format: date
  *               sinopse:
  *                 type: string
- *               classInd:
- *                 type: string
- *               fotoFilme:
- *                 type: string
- *                 format: binary
  *     responses:
  *       200:
- *         description: Filme atualizado com sucesso
+ *         description: Sugestão atualizada parcialmente com sucesso
  *       400:
- *         description: Erro de validação dos dados parciais
+ *         description: Nenhum dado enviado
  *       404:
- *         description: Filme não encontrado
+ *         description: Sugestão não encontrada
  *       500:
- *         description: Erro ao atualizar filme
+ *         description: Erro ao atualizar parcialmente
  */
-routerFilmes.patch("/:id", upload.single('fotoFilme'), async (req, res) => {
+routerSugestaoFilmes.patch("/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
-  const { nome, dataLanc, sinopse, classInd } = req.body;
-  const fotoFilme = req.file ? req.file.buffer : null;
-
-  const camposAtualizar = {};
-  if (nome) camposAtualizar.nome = nome;
-  if (dataLanc) camposAtualizar.dataLanc = dataLanc;
-  if (sinopse) camposAtualizar.sinopse = sinopse;
-  if (classInd) camposAtualizar.classInd = classInd;
-  if (fotoFilme) camposAtualizar.fotoFilme = fotoFilme;
-
-  if (Object.keys(camposAtualizar).length === 0) {
-    return res.status(400).json({
-      mensagem: "Nenhum dado enviado para atualização.",
-      codigo: "NO_UPDATE_DATA"
-    });
-  }
-
-  const { valido, erros } = validarFilmeParcial(camposAtualizar);
-  if (!valido) {
-    return res.status(400).json({
-      mensagem: "Erro de validação dos dados parciais.",
-      codigo: "PARTIAL_VALIDATION_ERROR",
-      erro: erros
-    });
-  }
+  const idPerfil = req.user.id;
+  const { nome, sinopse } = req.body;
 
   try {
-    const resultado = await editarFilmePatch(id, camposAtualizar);
+    const camposAtualizar = {};
+    if (nome) camposAtualizar.nomeFilme = nome;
+    if (sinopse) camposAtualizar.sinopse = sinopse;
 
-    if (resultado.affectedRows > 0) {
-      return res.status(200).json({ mensagem: "Filme atualizado com sucesso." });
-    } else {
-      return res.status(404).json({
-        mensagem: "Filme não encontrado.",
-        codigo: "FILME_NOT_FOUND"
+
+    if (Object.keys(camposAtualizar).length === 0) {
+      return res.status(400).json({
+        mensagem: "Nenhum dado enviado para atualização.",
+        codigo: "NO_UPDATE_DATA"
       });
     }
+    const resultado = await atualizarSugestaoFilmePatch(camposAtualizar, id, idPerfil);
+
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({
+        mensagem: "Sugestão de filme não encontrada.",
+        codigo: "SUGESTAO_FILME_NOT_FOUND"
+      });
+    }
+
+    return res.status(200).json({ mensagem: "Sugestão de filme atualizada parcialmente com sucesso." });
   } catch (error) {
     return res.status(500).json({
-      mensagem: "Erro ao atualizar filme.",
-      codigo: "UPDATE_FILME_ERROR",
+      mensagem: "Erro ao atualizar parcialmente sugestão de filme.",
+      codigo: "PATCH_SUGESTAO_FILME_ERROR",
       erro: error.message
     });
   }
 });
 
+// PATCH admin
+
 /**
  * @swagger
- * /filmes:
+ * /sugestoesFilmes/adm/{id}:
+ *   patch:
+ *     summary: Atualiza parcialmente uma sugestão (admin)
+ *     tags: [Sugestões de Filmes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               sinopse:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Sugestão atualizada parcialmente com sucesso
+ *       400:
+ *         description: Nenhum dado enviado
+ *       404:
+ *         description: Sugestão não encontrada
+ *       500:
+ *         description: Erro ao atualizar parcialmente
+ */
+routerSugestaoFilmes.patch("/adm/:id", verifyToken, isAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { nome, sinopse } = req.body;
+
+  try {
+    const camposAtualizar = {};
+    if (nome) camposAtualizar.nomeFilme = nome;
+    if (sinopse) camposAtualizar.sinopse = sinopse;
+
+
+    if (Object.keys(camposAtualizar).length === 0) {
+      return res.status(400).json({
+        mensagem: "Nenhum dado enviado para atualização.",
+        codigo: "NO_UPDATE_DATA"
+      });
+    }
+    const resultado = await atualizarSugestaoFilmePatchAdm(camposAtualizar, id);
+
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({
+        mensagem: "Sugestão de filme não encontrada.",
+        codigo: "SUGESTAO_FILME_NOT_FOUND"
+      });
+    }
+
+    return res.status(200).json({ mensagem: "Sugestão de filme atualizada parcialmente com sucesso." });
+  } catch (error) {
+    return res.status(500).json({
+      mensagem: "Erro ao atualizar parcialmente sugestão de filme.",
+      codigo: "PATCH_SUGESTAO_FILME_ERROR",
+      erro: error.message
+    });
+  }
+});
+
+
+/**
+ * @swagger
+ * /sugestoesFilmes:
  *   get:
- *     summary: Lista todos os filmes ou busca por nome
- *     tags: [Filmes]
+ *     summary: Lista todas as sugestões de filmes ou busca por nome
+ *     tags: [Sugestões de Filmes]
  *     parameters:
  *       - in: query
  *         name: nome
- *         required: false
  *         schema:
  *           type: string
  *         description: Nome do filme para busca
  *     responses:
  *       200:
- *         description: Lista de filmes
+ *         description: Lista de sugestões de filmes
  *       500:
- *         description: Erro ao buscar filmes
+ *         description: Erro ao buscar sugestões de filmes
  */
-routerFilmes.get("/", async (req, res) => {
+routerSugestaoFilmes.get("/", async (req, res) => {
   const { nome } = req.query;
 
   try {
     const resultado = nome
-      ? await buscarFilmesPorNome(nome)
-      : await buscarFilmes();
+      ? await buscarSugestaoFilmePorNome(nome)
+      : await buscarSugestaoFilme();
 
     return res.status(200).json(resultado);
   } catch (error) {
     return res.status(500).json({
-      mensagem: "Erro ao buscar filmes.",
-      codigo: "GET_FILMES_ERROR",
+      mensagem: "Erro ao buscar sugestões de filmes.",
+      codigo: "GET_SUGESTAO_FILMES_ERROR",
       erro: error.message
     });
   }
 });
 
+
 /**
  * @swagger
- * /filmes/{id}:
+ * /sugestoesFilmes/{id}:
  *   get:
- *     summary: Busca um filme pelo ID
- *     tags: [Filmes]
+ *     summary: Busca uma sugestão de filme pelo ID
+ *     tags: [Sugestões de Filmes]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       200:
- *         description: Filme encontrado
+ *         description: Sugestão encontrada
  *       404:
- *         description: Filme não encontrado
+ *         description: Sugestão de filme não encontrada
  *       500:
- *         description: Erro ao buscar o filme
+ *         description: Erro ao buscar a sugestão de filme
  */
-routerFilmes.get("/:id", async (req, res) => {
+routerSugestaoFilmes.get("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const resultado = await buscarFilmePorId(id);
+    const resultado = await buscarSugestaoFilmePorId(id);
 
     if (!resultado || resultado.length === 0) {
       return res.status(404).json({
-        mensagem: "Filme não encontrado.",
-        codigo: "FILME_NOT_FOUND"
+        mensagem: "Sugestão de filme não encontrada.",
+        codigo: "SUGESTAO_FILME_NOT_FOUND"
       });
     }
 
     return res.status(200).json(resultado);
   } catch (error) {
     return res.status(500).json({
-      mensagem: "Erro ao buscar o filme.",
-      codigo: "GET_FILME_ERROR",
+      mensagem: "Erro ao buscar a sugestão de filme.",
+      codigo: "GET_SUGESTAO_FILME_ERROR",
       erro: error.message
     });
   }
 });
 
-/**
- * @swagger
- * /filmes/imagem/{id}:
- *   get:
- *     summary: Busca a imagem de um filme pelo ID
- *     tags: [Filmes]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Retorna a imagem do filme
- *         content:
- *           image/jpeg:
- *             schema:
- *               type: string
- *               format: binary
- *       404:
- *         description: Imagem não encontrada
- *       500:
- *         description: Erro ao buscar imagem do filme
- */
-routerFilmes.get("/imagem/:id", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const [resultado] = await buscarImagensFilmePorId(id);
-
-    if (!resultado || !resultado.fotoFilme) {
-      return res.status(404).json({
-        mensagem: "Imagem não encontrada.",
-        codigo: "IMAGE_NOT_FOUND"
-      });
-    }
-
-    res.set("Content-Type", "image/jpeg"); // Ajuste o tipo real se necessário
-    return res.send(resultado.fotoFilme);
-  } catch (error) {
-    return res.status(500).json({
-      mensagem: "Erro ao buscar imagem do filme.",
-      codigo: "GET_IMAGE_ERROR",
-      erro: error.message
-    });
-  }
-});
 
 /**
  * @swagger
- * /filmes/{id}:
+ * /sugestoesFilmes/{id}:
  *   delete:
- *     summary: Deleta um filme pelo ID
- *     tags: [Filmes]
+ *     summary: Deleta uma sugestão de filme (usuário comum)
+ *     tags: [Sugestões de Filmes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       200:
- *         description: Filme deletado com sucesso
+ *         description: Sugestão deletada com sucesso
  *       404:
- *         description: Filme não encontrado
+ *         description: Sugestão não encontrada
  *       500:
- *         description: Erro ao deletar filme
+ *         description: Erro ao deletar
  */
-routerFilmes.delete("/:id", async (req, res) => {
+routerSugestaoFilmes.delete("/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
+  const idPerfil = req.user.id;
 
   try {
-    const resultado = await deletarFilme(id);
+    const resultado = await deletarSugestaoFilme(id, idPerfil);
 
     if (resultado.affectedRows === 0) {
       return res.status(404).json({
-        mensagem: "Filme não encontrado.",
-        codigo: "FILME_NOT_FOUND"
+        mensagem: "Sugestão de filme não encontrada.",
+        codigo: "SUGESTAO_FILME_NOT_FOUND"
       });
     }
 
-    return res.status(200).json({ mensagem: "Filme deletado com sucesso." });
+    return res.status(200).json({ mensagem: "Sugestão de filme deletada com sucesso." });
   } catch (error) {
     return res.status(500).json({
-      mensagem: "Erro ao deletar filme.",
-      codigo: "DELETE_FILME_ERROR",
+      mensagem: "Erro ao deletar sugestão de filme.",
+      codigo: "DELETE_SUGESTAO_FILME_ERROR",
       erro: error.message
     });
   }
 });
 
 
-export default routerFilmes;
+
+/**
+ * @swagger
+ * /sugestoesFilmes/adm/{id}:
+ *   delete:
+ *     summary: Deleta uma sugestão de filme (admin)
+ *     tags: [Sugestões de Filmes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Sugestão deletada com sucesso
+ *       404:
+ *         description: Sugestão não encontrada
+ *       500:
+ *         description: Erro ao deletar
+ */
+routerSugestaoFilmes.delete("/adm/:id", verifyToken, isAdmin, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const resultado = await deletarSugestaoFilmeAdm(id);
+
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({
+        mensagem: "Sugestão de filme não encontrada.",
+        codigo: "SUGESTAO_FILME_NOT_FOUND"
+      });
+    }
+
+    return res.status(200).json({ mensagem: "Sugestão de filme deletada com sucesso." });
+  } catch (error) {
+    return res.status(500).json({
+      mensagem: "Erro ao deletar sugestão de filme.",
+      codigo: "DELETE_SUGESTAO_FILME_ERROR",
+      erro: error.message
+    });
+  }
+});
+
+
+
+/**
+ * @swagger
+ * /sugestoesFilmes/adm/{id}:
+ *   put:
+ *     summary: Atualiza completamente uma sugestão (admin)
+ *     tags: [Sugestões de Filmes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nome
+ *               - sinopse
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               sinopse:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Sugestão atualizada com sucesso
+ *       400:
+ *         description: Erro de validação
+ *       404:
+ *         description: Sugestão não encontrada
+ *       500:
+ *         description: Erro ao atualizar
+ */
+routerSugestaoFilmes.put("/adm/:id", verifyToken, isAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { nome, sinopse } = req.body;
+
+  const { valido, erros } = await validarSugestaoFilmeCompleto({ nome, sinopse });
+
+  if (!valido) {
+    return res.status(400).json({
+      mensagem: "Erro de validação dos dados.",
+      codigo: "VALIDATION_ERROR",
+      erro: erros
+    });
+  }
+
+  try {
+    const resultado = await atualizarSugestaoFilmePutAdm(nome, sinopse, id);
+
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({
+        mensagem: "Sugestão de filme não encontrada.",
+        codigo: "SUGESTAO_FILME_NOT_FOUND"
+      });
+    }
+
+    return res.status(200).json({ mensagem: "Sugestão de filme atualizada com sucesso." });
+  } catch (error) {
+    return res.status(500).json({
+      mensagem: "Erro ao atualizar sugestão de filme.",
+      codigo: "UPDATE_SUGESTAO_FILME_ERROR",
+      erro: error.message
+    });
+  }
+});
+
+export default routerSugestaoFilmes;

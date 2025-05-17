@@ -19,6 +19,7 @@ import { verifyToken, isAdmin } from "./middlewares/verifyToken.js";
 import cookieParser from "cookie-parser";
 import authRoutes from "./auth.js"
 import routerSugestaoAtores from "./isa/rotas/rotaSugsAtores.js";
+import routerSugestaoFilmes from "./isa/rotas/rotaSugsFilmes.js";
 const porta = 9000;
 const app = express();
 app.use(cors());
@@ -52,6 +53,7 @@ app.use("/avaliacaoComentarios", routerAvaliacaoComentarios)
 app.use("/avaliacaoAtores", routerAvaliacaoAtores)
 app.use("/produtorFilmes", routerProdutorFilmes)
 app.use("/sugestaoAtores", routerSugestaoAtores)
+app.use("/sugestaoFilmes", routerSugestaoFilmes)
 app.listen(porta, () => {
     const data = new Date();
     console.log(`Seridor iniciado na porta ${porta} ${data}`);

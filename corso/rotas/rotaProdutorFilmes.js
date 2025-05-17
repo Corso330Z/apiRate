@@ -23,7 +23,7 @@ const routerProdutorFilmes = express.Router();
 /**
  * @swagger
  * tags:
- *   name: ProdutorFilmes
+ *   name: Produtores em filmes
  *   description: Endpoints para gerenciar relações entre produtores e filmes
  */
 
@@ -32,7 +32,7 @@ const routerProdutorFilmes = express.Router();
  * /produtorFilmes:
  *   get:
  *     summary: Lista todas as relações entre produtores e filmes
- *     tags: [ProdutorFilmes]
+ *     tags: [Produtores em filmes]
  *     responses:
  *       200:
  *         description: Relações encontradas com sucesso.
@@ -57,7 +57,7 @@ routerProdutorFilmes.get("/", async (req, res) => {
  * /produtorFilmes/produtor/{idProdutor}:
  *   get:
  *     summary: Lista todos os filmes de um produtor
- *     tags: [ProdutorFilmes]
+ *     tags: [Produtores em filmes]
  *     parameters:
  *       - in: path
  *         name: idProdutor
@@ -90,7 +90,7 @@ routerProdutorFilmes.get("/produtor/:idProdutor", async (req, res) => {
  * /produtorFilmes/filme/{idFilme}:
  *   get:
  *     summary: Lista todos os produtores de um filme
- *     tags: [ProdutorFilmes]
+ *     tags: [Produtores em filmes]
  *     parameters:
  *       - in: path
  *         name: idFilme
@@ -123,7 +123,7 @@ routerProdutorFilmes.get("/filme/:idFilme", async (req, res) => {
  * /produtorFilmes/produtorFilme/{idFilme}/{idProdutor}:
  *   get:
  *     summary: Busca uma relação específica entre um produtor e um filme
- *     tags: [ProdutorFilmes]
+ *     tags: [Produtores em filmes]
  *     parameters:
  *       - in: path
  *         name: idFilme
@@ -160,7 +160,9 @@ routerProdutorFilmes.get("/produtorFilme/:idFilme/:idProdutor", async (req, res)
  * /produtorFilmes:
  *   post:
  *     summary: Cria uma nova relação entre produtor e filme
- *     tags: [ProdutorFilmes]
+ *     tags: [Produtores em filmes]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -207,7 +209,9 @@ routerProdutorFilmes.post("/", verifyToken, isAdmin, validarCriacaoRelacaoProdut
  * /produtorFilmes/filme/{idFilme}:
  *   delete:
  *     summary: Deleta todas as relações de um filme
- *     tags: [ProdutorFilmes]
+ *     tags: [Produtores em filmes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: idFilme
@@ -247,7 +251,9 @@ routerProdutorFilmes.delete("/filme/:idFilme", verifyToken, isAdmin, async (req,
  * /produtorFilmes/produtor/{idProdutor}:
  *   delete:
  *     summary: Deleta todas as relações de um produtor
- *     tags: [ProdutorFilmes]
+ *     tags: [Produtores em filmes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: idProdutor
@@ -287,7 +293,9 @@ routerProdutorFilmes.delete("/produtor/:idProdutor", verifyToken, isAdmin, async
  * /produtorFilmes/{idFilme}/{idProdutor}:
  *   delete:
  *     summary: Deleta a relação específica entre um produtor e um filme
- *     tags: [ProdutorFilmes]
+ *     tags: [Produtores em filmes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: idFilme

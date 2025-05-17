@@ -25,6 +25,8 @@ const routerAtores = express.Router();
  *   post:
  *     summary: Adiciona um novo ator
  *     tags: [Atores]
+ *     security:
+ *       - bearerAuth: []
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
@@ -74,7 +76,7 @@ routerAtores.post("/", verifyToken, isAdmin, upload.single('fotoAtor'), async (r
     const resultado = await adicionarAtor(nome, dataNasc, vivo, fotoAtor);
     //console.log(resultado)
     if (resultado[0].affectedRows > 0) {
-        return res.status(201).json({ mensagem: "Ator adicionado com sucesso." });
+      return res.status(201).json({ mensagem: "Ator adicionado com sucesso." });
     } else {
       return res.status(404).json({ mensagem: "Não foi possivel, adicionar ator." });
     }
@@ -95,6 +97,8 @@ routerAtores.post("/", verifyToken, isAdmin, upload.single('fotoAtor'), async (r
  *     tags: [Atores]
  *     consumes:
  *       - multipart/form-data
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -146,7 +150,7 @@ routerAtores.put("/:id", verifyToken, isAdmin, upload.single('fotoAtor'), async 
       mensagem: "Erro de validação dos dados.",
       codigo: "VALIDATION_ERROR",
       erro: erros
-    }); 
+    });
   }
 
   try {
@@ -178,6 +182,8 @@ routerAtores.put("/:id", verifyToken, isAdmin, upload.single('fotoAtor'), async 
  *     tags: [Atores]
  *     consumes:
  *       - multipart/form-data
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -278,7 +284,7 @@ routerAtores.patch("/:id", verifyToken, isAdmin, upload.single('fotoAtor'), asyn
  *         description: Erro ao buscar atores
  */
 
-routerAtores.get("/",  async (req, res) => {
+routerAtores.get("/", async (req, res) => {
   const { nome } = req.query;
 
   try {
@@ -401,6 +407,8 @@ routerAtores.get("/fotoAtor/:id", async (req, res) => {
  *   delete:
  *     summary: Remove um ator pelo ID
  *     tags: [Atores]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

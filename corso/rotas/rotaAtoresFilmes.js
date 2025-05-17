@@ -23,7 +23,7 @@ const routerAtoresFilmes = express.Router();
 /**
  * @swagger
  * tags:
- *   name: AtoresFilmes
+ *   name: Atores em filmes
  *   description: Endpoints para gerenciar relações entre atores e filmes
  */
 
@@ -33,7 +33,7 @@ const routerAtoresFilmes = express.Router();
  * /atoresFilmes:
  *   get:
  *     summary: Lista todas as relações entre atores e filmes
- *     tags: [AtoresFilmes]
+ *     tags: [Atores em filmes]
  *     responses:
  *       200:
  *         description: Relações encontradas com sucesso.
@@ -60,7 +60,7 @@ routerAtoresFilmes.get("/", async (req, res) => {
  * /atoresFilmes/ator/{idAtor}:
  *   get:
  *     summary: Lista todos os filmes em que um ator participou
- *     tags: [AtoresFilmes]
+ *     tags: [Atores em filmes]
  *     parameters:
  *       - in: path
  *         name: idAtor
@@ -94,7 +94,7 @@ routerAtoresFilmes.get("/ator/:idAtor", async (req, res) => {
  * /atoresFilmes/filme/{idFilme}:
  *   get:
  *     summary: Lista todos os atores que participaram de um filme
- *     tags: [AtoresFilmes]
+ *     tags: [Atores em filmes]
  *     parameters:
  *       - in: path
  *         name: idFilme
@@ -127,7 +127,7 @@ routerAtoresFilmes.get("/filme/:idFilme", async (req, res) => {
  * /atoresFilmes/atorFilme/{idFilme}/{idAtor}:
  *   get:
  *     summary: Busca uma relação específica entre um ator e um filme
- *     tags: [AtoresFilmes]
+ *     tags: [Atores em filmes]
  *     parameters:
  *       - in: path
  *         name: idFilme
@@ -164,7 +164,9 @@ routerAtoresFilmes.get("/atorFilme/:idFilme/:idAtor", async (req, res) => {
  * /atoresFilmes:
  *   post:
  *     summary: Cria uma nova relação entre ator e filme
- *     tags: [AtoresFilmes]
+ *     tags: [Atores em filmes]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -212,7 +214,9 @@ routerAtoresFilmes.post("/", verifyToken, isAdmin, validarCriacaoRelacaoAtorFilm
  * /atoresFilmes/filme/{idFilme}:
  *   delete:
  *     summary: Deleta todas as relações de um filme
- *     tags: [AtoresFilmes]
+ *     tags: [Atores em filmes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: idFilme
@@ -253,7 +257,9 @@ routerAtoresFilmes.delete("/filme/:idFilme", verifyToken, isAdmin, async (req, r
  * /atoresFilmes/ator/{idAtor}:
  *   delete:
  *     summary: Deleta todas as relações de um ator
- *     tags: [AtoresFilmes]
+ *     tags: [Atores em filmes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: idAtor
@@ -293,7 +299,9 @@ routerAtoresFilmes.delete("/ator/:idAtor", verifyToken, isAdmin, async (req, res
  * /atoresFilmes/atorFilme/{idFilme}/{idAtor}:
  *   delete:
  *     summary: Deleta uma relação específica entre um ator e um filme
- *     tags: [AtoresFilmes]
+ *     tags: [Atores em filmes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: idFilme

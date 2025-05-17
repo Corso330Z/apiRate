@@ -24,6 +24,8 @@ const routerFilmes = express.Router();
  *   post:
  *     summary: Adiciona um novo filme
  *     tags: [Filmes]
+ *     security:
+ *       - bearerAuth: []
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
@@ -95,6 +97,8 @@ routerFilmes.post("/", verifyToken, isAdmin, upload.single('fotoFilme'), async (
  *   put:
  *     summary: Atualiza todos os dados de um filme
  *     tags: [Filmes]
+ *     security:
+ *       - bearerAuth: []
  *     consumes:
  *       - multipart/form-data
  *     parameters:
@@ -178,6 +182,8 @@ routerFilmes.put("/:id", verifyToken, isAdmin, upload.single('fotoFilme'), async
  *   patch:
  *     summary: Atualiza parcialmente os dados de um filme
  *     tags: [Filmes]
+ *     security:
+ *       - bearerAuth: []
  *     consumes:
  *       - multipart/form-data
  *     parameters:
@@ -398,6 +404,8 @@ routerFilmes.get("/imagem/:id", async (req, res) => {
  *   delete:
  *     summary: Deleta um filme pelo ID
  *     tags: [Filmes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

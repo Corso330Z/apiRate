@@ -7,20 +7,21 @@ async function executarQuery(sql, params = []) {
         const resultado = await conexao.execute(sql, params);
         return resultado;
     } catch (error) {
-        throw new Error('Erro ao executar o comando', 500, 'DB_EXEC_ERROR', error.message);
+        console.log(error)
     } finally {
         if (conexao) conexao.release();
     }
 }
 
-async function adicionarFilme(nome, dataLanc, sinopse, classInd, fotoFilme) {
-    try{
-        const sql = `INSERT INTO filmes (dataLanc, sinopse, classInd, fotoFilme, nomeFilme) VALUES (?, ?, ?, ?, ?);`;
-        return await executarQuery(sql, [dataLanc, sinopse, classInd, fotoFilme, nome]);
+async function adicionarSugestaoFilme(id, nomeFilme, sinopse) {
+    try{        
+        //console.log(nome, dataNasc, vivo, fotoAtor)
+        const sql = `INSERT INTO sugestoesFilmes (perfil_idperfil, nomeFilme, sinopse) VALUES (?, ?, ?);`;
+        return await executarQuery(sql, [id, nomeFilme, sinopse]);
     } catch(error) {
         console.error(error);
     }
     
 }
 
-export { adicionarFilme }
+export { adicionarSugestaoFilme }

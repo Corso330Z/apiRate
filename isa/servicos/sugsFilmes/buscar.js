@@ -1,5 +1,16 @@
 import pool from '../../../config.js';
 
+const sqlPadrao = `SELECT 
+    sf.idsugestoesFilmes,
+    sf.perfil_idperfil,
+    sf.nomeFilme,
+    sf.sinopse,
+    p.nome AS nomePerfil,
+    p.email AS emailPerfil
+FROM sugestoesFilmes sf
+JOIN perfil p ON sf.perfil_idperfil = p.idperfil;
+`
+
 async function executarQuery(sql, params = []) {
     let conexao;
     try {
@@ -14,40 +25,31 @@ async function executarQuery(sql, params = []) {
 }
 
 
-async function buscarFilmes() {
+async function buscarSugestaoFilme() {
     try {
-        const sql = `SELECT idfilmes, dataLanc, sinopse, classInd, nomeFilme FROM filmes`;
+        const sql = sqlPadrao;
         return await executarQuery(sql);
     } catch (error) {
         console.error(error);
     }
 }
 
-async function buscarFilmePorId(id) {
+async function buscarSugestaoFilmePorId(id) {
     try {
-        const sql = `SELECT idfilmes, dataLanc, sinopse, classInd, nomeFilme FROM filmes WHERE idfilmes = ?`;
+        const sql = `${sqlPadrao} WHERE sf.idsugestoesAtores = ?`;
         return await executarQuery(sql, [id]);
     } catch (error) {
         console.error(error);
     }
-}
+} 
 
-async function buscarFilmesPorNome(nome) {
+async function buscarSugestaoFilmePorNome(nome) {
     try {
-        const sql = `SELECT idfilmes, dataLanc, sinopse, classInd, nomeFilme FROM filmes WHERE nomeFilme LIKE ?`;
+        const sql = `${sqlPadrao} WHERE sf.nomeFilme LIKE ?`;
         return await executarQuery(sql, [`%${nome}%`]);
     } catch (error) {
         console.error(error);
     }
 }
 
-async function buscarImagensFilmePorId(id) {
-    try {
-        const sql = `SELECT fotoFilme FROM filmes WHERE idfilmes = ?`;
-        return await executarQuery(sql, [id]);
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-export { buscarFilmePorId, buscarFilmesPorNome, buscarFilmes, buscarImagensFilmePorId };
+export { buscarSugestaoFilmePorId, buscarSugestaoFilmePorNome, buscarSugestaoFilme };
