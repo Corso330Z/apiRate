@@ -4,7 +4,68 @@ import jwt from "jsonwebtoken";
 import pool from "./config.js";
 
 const authRoutes = express.Router();
+/**
+ * @swagger
+ * tags:
+ *   - name: Autenticação
+ *     description: Endpoints para gerenciar login e logout
+ */
 
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Realiza o login do usuário
+ *     tags: [Autenticação]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - senha
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: usuario@email.com
+ *               senha:
+ *                 type: string
+ *                 example: senha123
+ *     responses:
+ *       200:
+ *         description: Login realizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Login realizado com sucesso
+ *       401:
+ *         description: Usuário ou senha incorretos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Usuário ou senha incorretos.
+ *       500:
+ *         description: Erro no servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Erro no servidor
+ */
 authRoutes.post("/login", async (req, res) => {
   try {
     const { email, senha } = req.body;
@@ -43,6 +104,34 @@ authRoutes.post("/login", async (req, res) => {
     console.error("Erro no login:", error);
     res.status(500).json({ error: "Erro no servidor" });
   }
+});
+
+/**
+ * @swagger
+ * /logout:
+ *   post:
+ *     summary: Realiza o logout do usuário
+ *     tags: [Autenticação]
+ *     responses:
+ *       200:
+ *         description: Logout realizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Logout realizado com sucesso.
+ */
+authRoutes.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: "lax"
+  });
+
+  res.json({ message: "Logout realizado com sucesso." });
 });
 
 export default authRoutes
