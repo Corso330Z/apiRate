@@ -8,6 +8,51 @@ import { validarAtorCompleto, validarAtorParcial } from "../validacao/validacaoA
 
 const routerAtores = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Atores
+ *   description: Endpoints para gerenciamento de atores
+ */
+
+
+/**
+ * @swagger
+ * /atores:
+ *   post:
+ *     summary: Adiciona um novo ator
+ *     tags: [Atores]
+ *     consumes:
+ *       - multipart/form-data
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nome
+ *               - dataNasc
+ *               - vivo
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               dataNasc:
+ *                 type: string
+ *                 format: date
+ *               vivo:
+ *                 type: boolean
+ *               fotoAtor:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Ator adicionado com sucesso
+ *       400:
+ *         description: Erro de validação
+ *       500:
+ *         description: Erro interno no servidor
+ */
 routerAtores.post("/", upload.single('fotoAtor'), async (req, res) => {
   const { nome, dataNasc, vivo } = req.body;
   const fotoAtor = req.file ? req.file.buffer : null;
@@ -38,6 +83,53 @@ routerAtores.post("/", upload.single('fotoAtor'), async (req, res) => {
     });
   }
 });
+
+/**
+ * @swagger
+ * /atores/{id}:
+ *   put:
+ *     summary: Atualiza completamente um ator
+ *     tags: [Atores]
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do ator
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nome
+ *               - dataNasc
+ *               - vivo
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               dataNasc:
+ *                 type: string
+ *                 format: date
+ *               vivo:
+ *                 type: boolean
+ *               fotoAtor:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Ator atualizado com sucesso
+ *       400:
+ *         description: Erro de validação
+ *       404:
+ *         description: Ator não encontrado
+ *       500:
+ *         description: Erro interno no servidor
+ */
 
 routerAtores.put("/:id", upload.single('fotoAtor'), async (req, res) => {
   const { id } = req.params;
@@ -73,6 +165,50 @@ routerAtores.put("/:id", upload.single('fotoAtor'), async (req, res) => {
     });
   }
 });
+
+
+/**
+ * @swagger
+ * /atores/{id}:
+ *   patch:
+ *     summary: Atualiza parcialmente os dados de um ator
+ *     tags: [Atores]
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do ator
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               dataNasc:
+ *                 type: string
+ *                 format: date
+ *               vivo:
+ *                 type: boolean
+ *               fotoAtor:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Ator atualizado com sucesso
+ *       400:
+ *         description: Erro de validação ou dados ausentes
+ *       404:
+ *         description: Ator não encontrado
+ *       500:
+ *         description: Erro interno no servidor
+ */
 
 routerAtores.patch("/:id", upload.single('fotoAtor'), async (req, res) => {
   const { id } = req.params;
@@ -119,6 +255,26 @@ routerAtores.patch("/:id", upload.single('fotoAtor'), async (req, res) => {
   }
 });
 
+
+/**
+ * @swagger
+ * /atores:
+ *   get:
+ *     summary: Lista todos os atores ou busca por nome
+ *     tags: [Atores]
+ *     parameters:
+ *       - in: query
+ *         name: nome
+ *         schema:
+ *           type: string
+ *         description: Nome do ator para busca
+ *     responses:
+ *       200:
+ *         description: Lista de atores
+ *       500:
+ *         description: Erro ao buscar atores
+ */
+
 routerAtores.get("/", async (req, res) => {
   const { nome } = req.query;
 
@@ -136,6 +292,29 @@ routerAtores.get("/", async (req, res) => {
     });
   }
 });
+
+
+/**
+ * @swagger
+ * /atores/{id}:
+ *   get:
+ *     summary: Retorna os dados de um ator pelo ID
+ *     tags: [Atores]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do ator
+ *     responses:
+ *       200:
+ *         description: Dados do ator
+ *       404:
+ *         description: Ator não encontrado
+ *       500:
+ *         description: Erro ao buscar o ator
+ */
 
 routerAtores.get("/:id", async (req, res) => {
   const { id } = req.params;
@@ -160,6 +339,34 @@ routerAtores.get("/:id", async (req, res) => {
   }
 });
 
+
+/**
+ * @swagger
+ * /atores/fotoAtor/{id}:
+ *   get:
+ *     summary: Retorna a imagem (foto) de um ator
+ *     tags: [Atores]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do ator
+ *     responses:
+ *       200:
+ *         description: Imagem retornada com sucesso
+ *         content:
+ *           image/jpeg:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       404:
+ *         description: Imagem não encontrada
+ *       500:
+ *         description: Erro ao buscar imagem
+ */
+
 routerAtores.get("/fotoAtor/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -183,6 +390,29 @@ routerAtores.get("/fotoAtor/:id", async (req, res) => {
     });
   }
 });
+
+
+/**
+ * @swagger
+ * /atores/{id}:
+ *   delete:
+ *     summary: Remove um ator pelo ID
+ *     tags: [Atores]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do ator
+ *     responses:
+ *       200:
+ *         description: Ator deletado com sucesso
+ *       404:
+ *         description: Ator não encontrado
+ *       500:
+ *         description: Erro ao deletar ator
+ */
 
 routerAtores.delete("/:id", async (req, res) => {
   const { id } = req.params;

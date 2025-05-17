@@ -1,6 +1,9 @@
 import express from "express";
 import cors from "cors";
 
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './swaggerConfig.js';
+
 //importando a rota
 import routerFilmes from "./hiago/rotas/rotafilmes.js";
 import routerAvaliacaoFilmes from "./mariana/rotas/rotaAvaliaFilmes.js"
@@ -15,7 +18,7 @@ app.use(cors());
 
 app.use(express.json());
 
-
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/filmes", routerFilmes)
 app.use("/avaliacaoFilmes", routerAvaliacaoFilmes)
