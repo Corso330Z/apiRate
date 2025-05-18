@@ -13,13 +13,15 @@ async function executarQuery(sql, params = []) {
     }
 }
 
-async function deletarDiretor(id) {
+
+async function editarComentario(descricao, id, idPerfil) {
     try {
-        const sql = `DELETE FROM diretor WHERE iddiretor = ?`;
-        return await executarQuery(sql, [id]);
+        const sql = `UPDATE comentarios SET descricao = ? WHERE idcomentarios = ? AND perfil_idperfil = ?`;
+        return await executarQuery(sql, [descricao, id, idPerfil]);
     } catch (error) {
         console.error(error);
     }
 }
 
-export { deletarDiretor }
+
+export{ editarComentario }

@@ -28,6 +28,7 @@ import routerDiretor from "./livia/rotas/rotaDiretor.js";
 import routerDiretoresFilmes from "./livia/rotas/rotaDiretoresFilmes.js";
 import routerGenero from "./max/rotas/rotaGeneros.js";
 import routerGenerosFilmes from "./max/rotas/rotaGenerosFilmes.js";
+import routerComentariosFilmes from "./livia/rotas/rotaComentarios.js";
 const porta = 9000;
 const app = express();
 app.use(cors());
@@ -71,7 +72,7 @@ app.use("/diretor", routerDiretor)
 app.use("/diretoresFilmes", routerDiretoresFilmes)
 app.use("/generos", routerGenero)
 app.use("/generosFilmes", routerGenerosFilmes)
-
+app.use("/comentarios", routerComentariosFilmes)
 
 app.listen(porta, () => {
     const data = new Date();

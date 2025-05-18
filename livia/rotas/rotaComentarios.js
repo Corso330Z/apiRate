@@ -1,116 +1,556 @@
 import express from "express";
 import {
-  buscarTodosComentarios,
-  buscarComentarioPorId,
-  buscarComentariosPorFilme,
-  buscarComentariosPorPerfil,
-  adicionarComentario,
-  editarComentario,
-  deletarComentarioPorId,
-  deletarComentariosPorFilme,
-  deletarComentariosPorPerfil,
-} from "../servicos/comentarios.js";
+  buscarComentariosFilmes,
+  buscarComentariosFilmesByIdFilme,
+  buscarComentariosFilmesByIdFilmeAndIdPerfil,
+  buscarComentariosFilmesByIdPerfil,
+  buscarComentariosFilmesById,
+} from "../servicos//comentariosFilmes/buscar.js";
 
-const routerComentarios = express.Router();
+import {
+  deletarComentariosFilmes,
+  deletarComentariosFilmesByPerfil,
+  deletarComentariosFilmesByFilme,
+  deletarComentariosFilmesByFilmeAndPerfil,
+} from "../servicos/comentariosFilmes/deletar.js";
 
+import { adicionarComentarioFilme } from "../servicos/comentariosFilmes/adicionar.js";
+import { validarComentarioFilme } from "../validacao/validacaoComentariosFilmes.js";
+import { editarComentario } from "../servicos/comentariosFilmes/editar.js";
+import { verifyToken, isAdmin } from "../../middlewares/verifyToken.js";
 
-routerComentarios.get("/", async (req, res) => {
+const routerComentariosFilmes = express.Router();
+
+/**
+ * @swagger
+ * tags:
+ *   name: Comentários filmes
+ *   description: Endpoints para gerenciar comentários em filmes.
+ */
+
+/**
+ * @swagger
+ * /comentarios:
+ *   get:
+ *     summary: Lista todos os comentários de filmes
+ *     tags: [Comentários filmes]
+ *     responses:
+ *       200:
+ *         description: Comentários encontrados com sucesso
+ *       500:
+ *         description: Erro ao buscar os comentários de filmes
+ */
+routerComentariosFilmes.get("/", async (req, res) => {
   try {
-    const comentarios = await buscarTodosComentarios();
-    res.status(200).json(comentarios);
+    const resultado = await buscarComentariosFilmes();
+    return res.status(200).json(resultado);
   } catch (error) {
-    res.status(500).json({ mensagem: "Erro ao buscar comentários", erro: error.message });
+    return res.status(500).json({
+      mensagem: "Erro ao buscar os comentários de filmes.",
+      codigo: "GET_COMENTARIOS_FILMES_ERROR",
+      erro: error.message,
+    });
   }
 });
 
-routerComentarios.get("/:id", async (req, res) => {
-  const { id } = req.params;
+/**
+ * @swagger
+ * /comentarios/{id}:
+ *   get:
+ *     summary: Busca um comentário de filme pelo ID
+ *     tags: [Comentários filmes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do comentário
+ *     responses:
+ *       200:
+ *         description: Comentário encontrado com sucesso
+ *       500:
+ *         description: Erro ao buscar os comentários de filmes
+ */
+routerComentariosFilmes.get("/:id", async (req, res) => {
+  const {id} = req.params
   try {
-    const comentario = await buscarComentarioPorId(Number(id));
-    if (comentario.length === 0) {
-      return res.status(404).json({ mensagem: "Comentário não encontrado." });
-    }
-    res.status(200).json(comentario[0]);
+    const resultado = await buscarComentariosFilmesById(id);
+    return res.status(200).json(resultado);
   } catch (error) {
-    res.status(500).json({ mensagem: "Erro ao buscar comentário", erro: error.message });
+    return res.status(500).json({
+      mensagem: "Erro ao buscar os comentários de filmes.",
+      codigo: "GET_COMENTARIOS_FILMES_ERROR",
+      erro: error.message,
+    });
   }
 });
 
-routerComentarios.get("/filme/:idFilme", async (req, res) => {
-  const { idFilme } = req.params;
+/**
+ * @swagger
+ * /comentarios/perfil/meuPerfil:
+ *   get:
+ *     summary: Lista os comentários do perfil autenticado
+ *     tags: [Comentários filmes]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Comentários do perfil encontrados com sucesso
+ *       500:
+ *         description: Erro ao buscar os comentários do perfil
+ */
+routerComentariosFilmes.get("/perfil/meuPerfil", verifyToken, async (req, res) => {
+  const idPerfil = req.user.id;
   try {
-    const comentarios = await buscarComentariosPorFilme(Number(idFilme));
-    res.status(200).json(comentarios);
+    const resultado = await buscarComentariosFilmesByIdPerfil(idPerfil);
+    return res.status(200).json(resultado);
   } catch (error) {
-    res.status(500).json({ mensagem: "Erro ao buscar comentários do filme", erro: error.message });
+    return res.status(500).json({
+      mensagem: "Erro ao buscar os comentários do perfil.",
+      codigo: "GET_COMENTARIOS_PERFIL_ERROR",
+      erro: error.message,
+    });
   }
 });
 
-routerComentarios.get("/perfil/:idPerfil", async (req, res) => {
+
+/**
+ * @swagger
+ * /comentarios/perfil/{idPerfil}:
+ *   get:
+ *     summary: Lista os comentários de um perfil específico
+ *     tags: [Comentários filmes]
+ *     parameters:
+ *       - in: path
+ *         name: idPerfil
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do perfil
+ *     responses:
+ *       200:
+ *         description: Comentários encontrados
+ *       500:
+ *         description: Erro ao buscar os comentários do perfil
+ */
+routerComentariosFilmes.get("/perfil/:idPerfil", async (req, res) => {
   const { idPerfil } = req.params;
   try {
-    const comentarios = await buscarComentariosPorPerfil(Number(idPerfil));
-    res.status(200).json(comentarios);
+    const resultado = await buscarComentariosFilmesByIdPerfil(idPerfil);
+    return res.status(200).json(resultado);
   } catch (error) {
-    res.status(500).json({ mensagem: "Erro ao buscar comentários do perfil", erro: error.message });
-  }
-});
-
-routerComentarios.post("/", async (req, res) => {
-  const dadosComentario = req.body;
-  try {
-    await adicionarComentario(dadosComentario);
-    res.status(201).json({ mensagem: "Comentário criado com sucesso." });
-  } catch (error) {
-    res.status(500).json({ mensagem: "Erro ao criar comentário", erro: error.message });
-  }
-});
-
-routerComentarios.patch("/", async (req, res) => {
-  const dadosEdicao = req.body;
-  try {
-    const result = await editarComentario(dadosEdicao);
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ mensagem: "Comentário não encontrado para edição." });
-    }
-    res.status(200).json({ mensagem: "Comentário atualizado com sucesso." });
-  } catch (error) {
-    res.status(500).json({ mensagem: "Erro ao editar comentário", erro: error.message });
+    return res.status(500).json({
+      mensagem: "Erro ao buscar os comentários do perfil.",
+      codigo: "GET_COMENTARIOS_PERFIL_ERROR",
+      erro: error.message,
+    });
   }
 });
 
 
-routerComentarios.delete("/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const result = await deletarComentarioPorId(Number(id));
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ mensagem: "Comentário não encontrado para deletar." });
-    }
-    res.status(200).json({ mensagem: "Comentário deletado com sucesso." });
-  } catch (error) {
-    res.status(500).json({ mensagem: "Erro ao deletar comentário", erro: error.message });
-  }
-});
-
-routerComentarios.delete("/filme/:idFilme", async (req, res) => {
+/**
+ * @swagger
+ * /comentarios/filme/{idFilme}:
+ *   get:
+ *     summary: Lista os comentários de um filme
+ *     tags: [Comentários filmes]
+ *     parameters:
+ *       - in: path
+ *         name: idFilme
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do filme
+ *     responses:
+ *       200:
+ *         description: Comentários encontrados
+ *       500:
+ *         description: Erro ao buscar os comentários do filme
+ */
+routerComentariosFilmes.get("/filme/:idFilme", async (req, res) => {
   const { idFilme } = req.params;
   try {
-    await deletarComentariosPorFilme(Number(idFilme));
-    res.status(200).json({ mensagem: "Comentários do filme deletados com sucesso." });
+    const resultado = await buscarComentariosFilmesByIdFilme(idFilme);
+    return res.status(200).json(resultado);
   } catch (error) {
-    res.status(500).json({ mensagem: "Erro ao deletar comentários do filme", erro: error.message });
+    return res.status(500).json({
+      mensagem: "Erro ao buscar os comentários do filme.",
+      codigo: "GET_COMENTARIOS_FILME_ERROR",
+      erro: error.message,
+    });
   }
 });
 
-routerComentarios.delete("/perfil/:idPerfil", async (req, res) => {
-  const { idPerfil } = req.params;
+
+/**
+ * @swagger
+ * /comentarios/perfilEFilme/{idPerfil}/{idFilme}:
+ *   get:
+ *     summary: Busca um comentário feito por um perfil específico em um filme
+ *     tags: [Comentários filmes]
+ *     parameters:
+ *       - in: path
+ *         name: idPerfil
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do perfil
+ *       - in: path
+ *         name: idFilme
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do filme
+ *     responses:
+ *       200:
+ *         description: Comentário encontrado
+ *       500:
+ *         description: Erro ao buscar o comentário
+ */
+routerComentariosFilmes.get("/perfilEFilme/:idPerfil/:idFilme", async (req, res) => {
+  const { idFilme, idPerfil } = req.params;
   try {
-    await deletarComentariosPorPerfil(Number(idPerfil));
-    res.status(200).json({ mensagem: "Comentários do perfil deletados com sucesso." });
+    const resultado = await buscarComentariosFilmesByIdFilmeAndIdPerfil(idPerfil, idFilme);
+    return res.status(200).json(resultado);
   } catch (error) {
-    res.status(500).json({ mensagem: "Erro ao deletar comentários do perfil", erro: error.message });
+    return res.status(500).json({
+      mensagem: "Erro ao buscar o comentário entre perfil e filme.",
+      codigo: "GET_COMENTARIO_PERFIL_FILME_ERROR",
+      erro: error.message,
+    });
   }
 });
 
-export default routerComentarios;
+/**
+ * @swagger
+ * /comentarios/adm:
+ *   post:
+ *     summary: Adiciona um comentário como administrador
+ *     tags: [Comentários filmes]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [idFilme, idPerfil, comentario]
+ *             properties:
+ *               idFilme:
+ *                 type: integer
+ *               idPerfil:
+ *                 type: integer
+ *               comentario:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Comentário adicionado com sucesso
+ *       400:
+ *         description: Erro de validação ou falha ao adicionar comentário
+ *       500:
+ *         description: Erro ao criar o comentário
+ */
+routerComentariosFilmes.post("/adm", verifyToken, isAdmin, async (req, res) => {
+  const { idFilme, idPerfil, comentario } = req.body;
+
+  try {
+    const erroValidacao = await validarComentarioFilme({ idFilme, idPerfil, comentario });
+
+    if (erroValidacao) {
+      return res.status(erroValidacao.status).json(erroValidacao.erro);
+    }
+    const resultado = await adicionarComentarioFilme(idFilme, idPerfil, comentario);
+
+    if (resultado.affectedRows > 0) {
+      return res.status(201).json({ mensagem: "Comentário adicionado com sucesso." });
+    } else {
+      return res.status(400).json({ mensagem: "Não foi possível adicionar o comentário." });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      mensagem: "Erro ao criar o comentário.",
+      codigo: "ADD_COMENTARIO_FILME_ERROR",
+      erro: error.message,
+    });
+  }
+});
+
+
+/**
+ * @swagger
+ * /comentarios:
+ *   post:
+ *     summary: Adiciona um comentário autenticado
+ *     tags: [Comentários filmes]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [idFilme, comentario]
+ *             properties:
+ *               idFilme:
+ *                 type: integer
+ *               comentario:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Comentário adicionado com sucesso
+ *       400:
+ *         description: Erro de validação ou falha ao adicionar comentário
+ *       500:
+ *         description: Erro ao criar o comentário
+ */
+routerComentariosFilmes.post("/", verifyToken, async (req, res) => {
+  const { idFilme, comentario } = req.body;
+  const idPerfil = req.user.id;
+  try {
+    const erroValidacao = await validarComentarioFilme({ idFilme, idPerfil, comentario });
+
+    if (erroValidacao) {
+      return res.status(erroValidacao.status).json(erroValidacao.erro);
+    }
+    const resultado = await adicionarComentarioFilme(idFilme, idPerfil, comentario);
+    if (resultado.affectedRows > 0) {
+      return res.status(201).json({ mensagem: "Comentário adicionado com sucesso." });
+    } else {
+      return res.status(400).json({ mensagem: "Não foi possível adicionar o comentário." });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      mensagem: "Erro ao criar o comentário.",
+      codigo: "ADD_COMENTARIO_FILME_ERROR",
+      erro: error.message,
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /comentarios:
+ *   patch:
+ *     summary: Edita um comentário do perfil autenticado
+ *     tags: [Comentários filmes]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [id, comentario]
+ *             properties:
+ *               id:
+ *                 type: integer
+ *               comentario:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Comentário editado com sucesso
+ *       400:
+ *         description: Erro de validação ou falha ao editar comentário
+ *       500:
+ *         description: Erro ao editar o comentário
+ */
+routerComentariosFilmes.patch("/", verifyToken, async (req, res) => {
+  const { id, comentario } = req.body;
+  const idPerfil = req.user.id;
+  try {
+    if (typeof comentario !== 'string' || comentario.trim().length === 0) {
+      return res.status(400).json({
+        mensagem: "'comentario' deve ser uma string não vazia.",
+        codigo: "comentario_INVALIDA"
+      })
+  }
+    const resultado = await editarComentario(comentario, id, idPerfil);
+    if (resultado.affectedRows > 0) {
+      return res.status(201).json({ mensagem: "Comentário editado com sucesso." });
+    } else {
+      return res.status(400).json({ mensagem: "Não foi possível editar o comentário." });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      mensagem: "Erro ao editar o comentário.",
+      codigo: "ADD_COMENTARIO_FILME_ERROR",
+      erro: error.message,
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /comentarios/filme/{idFilme}:
+ *   delete:
+ *     summary: Remove todos os comentários de um filme
+ *     tags: [Comentários filmes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: idFilme
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do filme
+ *     responses:
+ *       200:
+ *         description: Comentários deletados com sucesso
+ *       404:
+ *         description: Nenhum comentário encontrado
+ *       500:
+ *         description: Erro ao deletar comentários
+ */
+routerComentariosFilmes.delete("/filme/:idFilme", verifyToken, isAdmin, async (req, res) => {
+  const { idFilme } = req.params;
+  try {
+    const resultado = await deletarComentariosFilmesByFilme(idFilme);
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({
+        mensagem: "Nenhum comentário encontrado para este filme.",
+        codigo: "FILME_COMENTARIO_NOT_FOUND",
+      });
+    }
+    return res.status(200).json({ mensagem: "Comentários do filme deletados com sucesso." });
+  } catch (error) {
+    return res.status(500).json({
+      mensagem: "Erro ao deletar os comentários do filme.",
+      codigo: "DELETE_COMENTARIOS_FILME_ERROR",
+      erro: error.message,
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /comentarios/{id}:
+ *   delete:
+ *     summary: Remove um comentário por ID (autenticado)
+ *     tags: [Comentários filmes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do comentário
+ *     responses:
+ *       200:
+ *         description: Comentário deletado com sucesso
+ *       404:
+ *         description: Comentário não encontrado
+ *       500:
+ *         description: Erro ao deletar o comentário
+ */
+routerComentariosFilmes.delete("/:id", verifyToken, async (req, res) => {
+  const { id } = req.params;
+  const idPerfil = req.user.id
+  try {
+    const resultado = await deletarComentariosFilmes(id, idPerfil);
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({
+        mensagem: "Nenhum comentário encontrado.",
+        codigo: "FILME_COMENTARIO_NOT_FOUND",
+      });
+    }
+    return res.status(200).json({ mensagem: "Comentários do filme deletados com sucesso." });
+  } catch (error) {
+    return res.status(500).json({
+      mensagem: "Erro ao deletar os comentários do filme.",
+      codigo: "DELETE_COMENTARIOS_FILME_ERROR",
+      erro: error.message,
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /comentarios/perfil:
+ *   delete:
+ *     summary: Remove todos os comentários do perfil autenticado
+ *     tags: [Comentários filmes]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Comentários do perfil removidos com sucesso
+ *       404:
+ *         description: Nenhum comentário encontrado para o perfil
+ *       500:
+ *         description: Erro ao deletar comentários
+ */
+routerComentariosFilmes.delete("/perfil", verifyToken, async (req, res) => {
+  const idPerfil = req.user.id;
+  try {
+    const resultado = await deletarComentariosFilmesByPerfil(idPerfil);
+    if (resultado.affectedRows == 0) {
+      return res.status(404).json({
+        mensagem: "Nenhum comentário encontrado para este perfil.",
+        codigo: "COMENTARIOS_PERFIL_NOT_FOUND",
+      });
+    }
+    return res.status(200).json({ mensagem: "Comentários do perfil removidos com sucesso." });
+  } catch (error) {
+    return res.status(500).json({
+      mensagem: "Erro ao deletar os comentários do perfil.",
+      codigo: "DELETE_COMENTARIOS_PERFIL_ERROR",
+      erro: error.message,
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /comentarios/perfilEFilme/{idPerfil}/{idFilme}:
+ *   delete:
+ *     summary: Remove o comentário entre perfil e filme
+ *     tags: [Comentários filmes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: idPerfil
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: path
+ *         name: idFilme
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Comentário removido com sucesso
+ *       404:
+ *         description: Comentário não encontrado
+ *       500:
+ *         description: Erro ao deletar o comentário
+ */
+routerComentariosFilmes.delete("/perfilEFilme/:idPerfil/:idFilme", verifyToken, async (req, res) => {
+  const { idFilme, idPerfil } = req.params;
+  try {
+    const resultado = await deletarComentariosFilmesByFilmeAndPerfil(idFilme, idPerfil);
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({
+        mensagem: "Comentário entre perfil e filme não encontrado.",
+        codigo: "COMENTARIO_RELATION_NOT_FOUND",
+      });
+    }
+    return res.status(200).json({ mensagem: "Comentário removido com sucesso." });
+  } catch (error) {
+    return res.status(500).json({
+      mensagem: "Erro ao deletar o comentário.",
+      codigo: "DELETE_COMENTARIO_FILME_PERFIL_ERROR",
+      erro: error.message,
+    });
+  }
+});
+
+export default routerComentariosFilmes;

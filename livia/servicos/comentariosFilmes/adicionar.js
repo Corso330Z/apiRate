@@ -13,15 +13,14 @@ async function executarQuery(sql, params = []) {
     }
 }
 
-
-async function editarDiretorPut(nome, id) {
+async function adicionarComentarioFilme(idFilme, idPerfil, comentario) {
     try {
-        const sql = `UPDATE diretor SET nome = ? WHERE iddiretor = ?`;
-        return await executarQuery(sql, [nome, id]);
+        const sql = `INSERT INTO comentarios (descricao, perfil_idperfil, filmes_idfilmes) VALUES (?, ?, ?);`;
+        return await executarQuery(sql, [comentario, idPerfil, idFilme]);
     } catch (error) {
         console.error(error);
     }
+
 }
 
-
-export{ editarDiretorPut }
+export { adicionarComentarioFilme }
