@@ -13,14 +13,15 @@ async function executarQuery(sql, params = []) {
     }
 }
 
-async function adicionarGenero(nome) {
-    try{
-        const sql = `INSERT INTO generos (nome) VALUE (?);`;
-        return await executarQuery(sql, [nome]);
-    } catch(error) {
+
+async function editarGeneroPut(nome, id) {
+    try {
+        const sql = `UPDATE generos SET nome = ? WHERE idgeneros = ?`;
+        return await executarQuery(sql, [nome, id]);
+    } catch (error) {
         console.error(error);
     }
-    
 }
 
-export { adicionarGenero }
+
+export{ editarGeneroPut }

@@ -14,14 +14,31 @@ async function executarQuery(sql, params = []) {
 }
 
 
-async function buscarGenero() {
+async function buscarGeneros() {
     try {
-        const sql = `SELECT idgeneros, nome,  FROM generos`;
+        const sql = `SELECT * FROM generos`;
         return await executarQuery(sql);
     } catch (error) {
         console.error(error);
     }
 }
 
+async function buscarGeneroPorId(id) {
+    try {
+        const sql = `SELECT * FROM generos WHERE idgeneros = ?`;
+        return await executarQuery(sql, [id]);
+    } catch (error) {
+        console.error(error);
+    }
+}
 
-export { buscarGenero };
+async function buscarGenerosPorNome(nome) {
+    try {
+        const sql = `SELECT * FROM generos WHERE nome LIKE ?`;
+        return await executarQuery(sql, [`%${nome}%`]);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export { buscarGeneroPorId, buscarGenerosPorNome, buscarGeneros};

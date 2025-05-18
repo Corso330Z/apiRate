@@ -1,29 +1,31 @@
-import { buscarGenero } from "../servicos/genero/buscar";
-import { buscarFilmesGenero } from "../servicos/generoFilme/generoFilme";
+import { buscarGenerosPorNome } from "../servicos/genero/buscar.js";
 
-async function validarGenero({ nome }) {
+async function validarGeneroCompleto(nome) {
   const erros = [];
 
-  if (!nome || typeof nome !== "string") {
+  if (!nome || typeof nome !== 'string') {
     erros.push("O nome é obrigatório e deve ser uma string.");
   } else {
     // Verifica se já existe um genero com o mesmo nome
-    const generoExistentes = await buscarFilmesGenero(nome);
-    if (generoExistentes.length > 0) {
-      erros.push("Já existe um gênero com esse nome cadastrado.");
+    const generosExistentes = await buscarGenerosPorNome(nome);
+    if (generosExistentes.length > 0) {
+      erros.push("Já existe um genero com esse nome cadastrado.");
     }
   }
-}
-
-function validarGeneroParcial(dados) {
-  const erros = [];
-
-  if (dados.nome && typeof dados.nome !== "string")
-    erros.push("O nome deve ser uma string.");
   return {
     valido: erros.length === 0,
-    erros,
+    erros
   };
 }
 
-export { validarGenero, validarGeneroParcial};
+async function validarGeneroParcial(nome) {
+  const erros = [];
+
+  if (nome && typeof nome !== 'string') erros.push("O nome deve ser uma string.");
+  return {
+    valido: erros.length === 0,
+    erros
+  };
+}
+
+export { validarGeneroCompleto, validarGeneroParcial }
