@@ -8,7 +8,7 @@ const sqlPadrao = `SELECT
     p.nome AS nomePerfil,
     p.email AS emailPerfil
 FROM sugestoesFilmes sf
-JOIN perfil p ON sf.perfil_idperfil = p.idperfil;
+JOIN perfil p ON sf.perfil_idperfil = p.idperfil
 `
 
 async function executarQuery(sql, params = []) {
@@ -36,7 +36,7 @@ async function buscarSugestaoFilme() {
 
 async function buscarSugestaoFilmePorId(id) {
     try {
-        const sql = `${sqlPadrao} WHERE sf.idsugestoesAtores = ?`;
+        const sql = `${sqlPadrao} WHERE sf.idsugestoesFilmes = ?`;
         return await executarQuery(sql, [id]);
     } catch (error) {
         console.error(error);

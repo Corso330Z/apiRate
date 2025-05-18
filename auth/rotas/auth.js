@@ -1,19 +1,20 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import pool from "./config.js";
+import pool from "../../config.js";
 
 const authRoutes = express.Router();
+
 /**
  * @swagger
  * tags:
- *   - name: Autenticação
- *     description: Endpoints para gerenciar login e logout
+ *   name: Autenticação
+ *   description: Endpoints para gerenciamento de atores
  */
 
 /**
  * @swagger
- * /login:
+ * /auth/login:
  *   post:
  *     summary: Realiza o login do usuário
  *     tags: [Autenticação]
@@ -108,7 +109,7 @@ authRoutes.post("/login", async (req, res) => {
 
 /**
  * @swagger
- * /logout:
+ * /auth/logout:
  *   post:
  *     summary: Realiza o logout do usuário
  *     tags: [Autenticação]
