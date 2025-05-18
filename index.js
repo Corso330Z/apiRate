@@ -21,6 +21,9 @@ import authRoutes from "./auth/rotas/auth.js"
 import routerSugestaoAtores from "./isa/rotas/rotaSugsAtores.js";
 import routerSugestaoFilmes from "./isa/rotas/rotaSugsFilmes.js";
 import routerAvaliacaoSugsFilmes from "./hiago/rotas/rotaAvaliaSugsFilme.js";
+import routerPerfil from "./lavinia/rotas/rotaPerfil.js";
+import routerFavoritosFilmes from "./lavinia/rotas/rotaFavsFilmes.js";
+import routerFavoritosAtores from "./lavinia/rotas/rotaFavsAtores.js";
 const porta = 9000;
 const app = express();
 app.use(cors());
@@ -57,6 +60,9 @@ app.use("/sugestaoAtores", routerSugestaoAtores)
 app.use("/sugestaoFilmes", routerSugestaoFilmes)
 app.use("/avaliacaoSugestaoAtores", routerAvaliacaoSugsAtores)
 app.use("/avaliacaoSugestaoFilmes", routerAvaliacaoSugsFilmes)
+app.use("/perfil", routerPerfil)
+app.use("/favoritosFilmes", routerFavoritosFilmes)
+app.use("/favoritosAtores", routerFavoritosAtores)
 
 app.listen(porta, () => {
     const data = new Date();
