@@ -24,6 +24,8 @@ import routerAvaliacaoSugsFilmes from "./hiago/rotas/rotaAvaliaSugsFilme.js";
 import routerPerfil from "./lavinia/rotas/rotaPerfil.js";
 import routerFavoritosFilmes from "./lavinia/rotas/rotaFavsFilmes.js";
 import routerFavoritosAtores from "./lavinia/rotas/rotaFavsAtores.js";
+import routerDiretor from "./livia/rotas/rotaDiretor.js";
+import routerDiretoresFilmes from "./livia/rotas/rotaDiretoresFilmes.js";
 const porta = 9000;
 const app = express();
 app.use(cors());
@@ -63,6 +65,8 @@ app.use("/avaliacaoSugestaoFilmes", routerAvaliacaoSugsFilmes)
 app.use("/perfil", routerPerfil)
 app.use("/favoritosFilmes", routerFavoritosFilmes)
 app.use("/favoritosAtores", routerFavoritosAtores)
+app.use("/diretor", routerDiretor)
+app.use("/diretoresFilmes", routerDiretoresFilmes)
 
 app.listen(porta, () => {
     const data = new Date();
