@@ -156,7 +156,7 @@ routerAvaliacaoSugsFilmes.get("/:id", async (req, res) => {
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID da sugestão de ator
+ *         description: ID da sugestão de filme
  *         schema:
  *           type: integer
  *     responses:
@@ -192,7 +192,7 @@ routerAvaliacaoSugsFilmes.get("/likes/sugestao/:id", async (req, res) => {
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID da sugestão de ator
+ *         description: ID da sugestão de filme
  *         schema:
  *           type: integer
  *     responses:
