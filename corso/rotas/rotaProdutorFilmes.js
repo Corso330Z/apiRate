@@ -190,11 +190,10 @@ routerProdutorFilmes.post("/", verifyToken, isAdmin, validarCriacaoRelacaoProdut
 
   try {
     const resultado = await adicionarAtorFilmes(idFilme, idProdutor);
-    if (resultado.affectedRows > 0) {
-      return res.status(201).json({ mensagem: "Relação criada com sucesso." });
-    } else {
+    if (resultado.affectedRows == 0) {
       return res.status(400).json({ mensagem: "Não foi possível criar a relação." });
-    }
+    } 
+    return res.status(201).json({ mensagem: "Relação criada com sucesso." });
   } catch (error) {
     return res.status(500).json({
       mensagem: "Erro ao criar relação entre produtor e filme.",
