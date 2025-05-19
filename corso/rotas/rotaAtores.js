@@ -59,7 +59,8 @@ const routerAtores = express.Router();
  *         description: Erro interno no servidor
  */
 routerAtores.post("/", verifyToken, isAdmin, upload.single('fotoAtor'), async (req, res) => {
-  const { nome, dataNasc, vivo } = req.body;
+  let { nome, dataNasc, vivo } = req.body;
+  vivo = vivo === 'true' || vivo === true ? 1 : 0;
   const fotoAtor = req.file ? req.file.buffer : null;
 
   const { valido, erros } = await validarAtorCompleto({ nome, dataNasc, vivo });
@@ -140,9 +141,9 @@ routerAtores.post("/", verifyToken, isAdmin, upload.single('fotoAtor'), async (r
 
 routerAtores.put("/:id", verifyToken, isAdmin, upload.single('fotoAtor'), async (req, res) => {
   const { id } = req.params;
-  const { nome, dataNasc, vivo } = req.body;
+  let { nome, dataNasc, vivo } = req.body;
+  vivo = vivo === 'true' || vivo === true ? 1 : 0;
   const fotoAtor = req.file ? req.file.buffer : null;
-
   const { valido, erros } = await validarAtorCompleto({ nome, dataNasc, vivo });
 
   if (!valido) {
@@ -221,7 +222,8 @@ routerAtores.put("/:id", verifyToken, isAdmin, upload.single('fotoAtor'), async 
 
 routerAtores.patch("/:id", verifyToken, isAdmin, upload.single('fotoAtor'), async (req, res) => {
   const { id } = req.params;
-  const { nome, dataNasc, vivo } = req.body;
+  let { nome, dataNasc, vivo } = req.body;
+  vivo = vivo === 'true' || vivo === true ? 1 : 0;
   const fotoAtor = req.file ? req.file.buffer : null;
   const camposAtualizar = {};
   if (nome) camposAtualizar.nome = nome;

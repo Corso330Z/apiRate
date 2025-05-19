@@ -17,7 +17,7 @@ const routerSugestaoFilmes = express.Router();
 
 /**
  * @swagger
- * /sugestoesFilmes:
+ * /sugestaoFilmes:
  *   post:
  *     summary: Adiciona uma nova sugestão de filme
  *     tags: [Sugestões de Filmes]
@@ -78,7 +78,7 @@ routerSugestaoFilmes.post("/", verifyToken, async (req, res) => {
 
 /**
  * @swagger
- * /sugestoesFilmes/{id}:
+ * /sugestaoFilmes/{id}:
  *   put:
  *     summary: Atualiza completamente uma sugestão (usuário comum)
  *     tags: [Sugestões de Filmes]
@@ -152,7 +152,7 @@ routerSugestaoFilmes.put("/:id", verifyToken, async (req, res) => {
 // PATCH comum
 /**
  * @swagger
- * /sugestoesFilmes/{id}:
+ * /sugestaoFilmes/{id}:
  *   patch:
  *     summary: Atualiza parcialmente uma sugestão (usuário comum)
  *     tags: [Sugestões de Filmes]
@@ -224,7 +224,7 @@ routerSugestaoFilmes.patch("/:id", verifyToken, async (req, res) => {
 
 /**
  * @swagger
- * /sugestoesFilmes/adm/{id}:
+ * /sugestaoFilmes/adm/{id}:
  *   patch:
  *     summary: Atualiza parcialmente uma sugestão (admin)
  *     tags: [Sugestões de Filmes]
@@ -294,7 +294,7 @@ routerSugestaoFilmes.patch("/adm/:id", verifyToken, isAdmin, async (req, res) =>
 
 /**
  * @swagger
- * /sugestoesFilmes:
+ * /sugestaoFilmes:
  *   get:
  *     summary: Lista todas as sugestões de filmes ou busca por nome
  *     tags: [Sugestões de Filmes]
@@ -331,7 +331,7 @@ routerSugestaoFilmes.get("/", async (req, res) => {
 
 /**
  * @swagger
- * /sugestoesFilmes/{id}:
+ * /sugestaoFilmes/{id}:
  *   get:
  *     summary: Busca uma sugestão de filme pelo ID
  *     tags: [Sugestões de Filmes]
@@ -375,7 +375,7 @@ routerSugestaoFilmes.get("/:id", async (req, res) => {
 
 /**
  * @swagger
- * /sugestoesFilmes/{id}:
+ * /sugestaoFilmes/{id}:
  *   delete:
  *     summary: Deleta uma sugestão de filme (usuário comum)
  *     tags: [Sugestões de Filmes]
@@ -423,7 +423,7 @@ routerSugestaoFilmes.delete("/:id", verifyToken, async (req, res) => {
 
 /**
  * @swagger
- * /sugestoesFilmes/adm/{id}:
+ * /sugestaoFilmes/adm/{id}:
  *   delete:
  *     summary: Deleta uma sugestão de filme (admin)
  *     tags: [Sugestões de Filmes]
@@ -470,7 +470,7 @@ routerSugestaoFilmes.delete("/adm/:id", verifyToken, isAdmin, async (req, res) =
 
 /**
  * @swagger
- * /sugestoesFilmes/adm/{id}:
+ * /sugestaoFilmes/adm/{id}:
  *   put:
  *     summary: Atualiza completamente uma sugestão (admin)
  *     tags: [Sugestões de Filmes]
