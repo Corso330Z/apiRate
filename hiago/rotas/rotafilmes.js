@@ -39,6 +39,7 @@ const routerFilmes = express.Router();
  *               - dataLanc
  *               - sinopse
  *               - classInd
+ *               - fotoFilme
  *             properties:
  *               nome:
  *                 type: string
@@ -118,6 +119,7 @@ routerFilmes.post("/", verifyToken, isAdmin, upload.single('fotoFilme'), async (
  *               - dataLanc
  *               - sinopse
  *               - classInd
+ *               - fotoFilme
  *             properties:
  *               nome:
  *                 type: string
@@ -436,7 +438,7 @@ routerFilmes.delete("/:id", verifyToken, isAdmin, async (req, res) => {
     return res.status(200).json({ mensagem: "Filme deletado com sucesso." });
   } catch (error) {
     return res.status(500).json({
-      mensagem: "Erro ao deletar filme.",
+      mensagem: "Erro ao deletar filme. Filme pode estar sendo usado.",
       codigo: "DELETE_FILME_ERROR",
       erro: error.message
     });

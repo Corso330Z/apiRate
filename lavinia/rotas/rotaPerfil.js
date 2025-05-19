@@ -34,6 +34,7 @@ const routerPerfil = express.Router();
  *             required:
  *               - nome
  *               - email
+*               - senha
  *             properties:
  *               nome:
  *                 type: string
@@ -111,6 +112,7 @@ routerPerfil.post("/", upload.single('fotoPerfil'), async (req, res) => {
  *             required:
  *               - nome
  *               - email
+ *               - senha
  *             properties:
  *               nome:
  *                 type: string
@@ -220,7 +222,7 @@ routerPerfil.patch("/adm", verifyToken, isAdmin, async (req, res) => {
 
 /**
  * @swagger
- * /perfil/{id}:
+ * /perfil:
  *   patch:
  *     summary: Atualiza parcialmente um perfil existente
  *     tags: [Perfil]
@@ -228,12 +230,6 @@ routerPerfil.patch("/adm", verifyToken, isAdmin, async (req, res) => {
  *       - bearerAuth: []
  *     consumes:
  *       - multipart/form-data
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema:
- *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -249,8 +245,6 @@ routerPerfil.patch("/adm", verifyToken, isAdmin, async (req, res) => {
  *                 type: string
  *               senha:
  *                 type: string
- *               adm:
- *                 type: boolean
  *               fotoPerfil:
  *                 type: string
  *                 format: binary
@@ -447,33 +441,27 @@ routerPerfil.get("/fotoPerfil/:id", async (req, res) => {
 
 /**
  * @swagger
- * /perfil/{id}:
+ * /perfil/meuPerfil:
  *   delete:
- *     summary: Deleta um perfil pelo ID
+ *     summary: Deleta o perfil do usuário autenticado
  *     tags: [Perfil]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema:
- *           type: string
  *     responses:
  *       200:
- *         description: Perfil deletado com sucesso
+ *         description: Perfil deletado com sucesso.
  *       404:
- *         description: Perfil não encontrado
+ *         description: Perfil não encontrado.
  *       500:
- *         description: Erro ao deletar Perfil
+ *         description: Erro ao deletar o perfil.
  */
-routerPerfil.delete("/:id", verifyToken, async (req, res) => {
-    const { id } = req.user;
+routerPerfil.delete("/meuPerfil", verifyToken, async (req, res) => {
+    const id = req.user.id;
 
     try {
         const resultado = await deletarPerfil(id);
-
-        if (resultado.affectedRows === 0) {
+        console.log(resultado)
+        if (resultado[0].affectedRows === 0) {
             return res.status(404).json({
                 mensagem: "Perfil não encontrado.",
                 codigo: "PERFIL_NOT_FOUND"
@@ -483,12 +471,59 @@ routerPerfil.delete("/:id", verifyToken, async (req, res) => {
         return res.status(200).json({ mensagem: "Perfil deletado com sucesso." });
     } catch (error) {
         return res.status(500).json({
-            mensagem: "Erro ao deletar Perfil.",
+            mensagem: "Erro ao deletar Perfil. Esse perfil pode estar sendo usado.",
             codigo: "DELETE_PERFIL_ERROR",
             erro: error.message
         });
     }
 });
+
+/**
+ * @swagger
+ * /perfil/adm/{id}:
+ *   delete:
+ *     summary: Deleta um perfil específico (apenas para administradores)
+ *     tags: [Perfil]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID do perfil a ser deletado
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Perfil deletado com sucesso.
+ *       404:
+ *         description: Perfil não encontrado.
+ *       500:
+ *         description: Erro ao deletar o perfil.
+ */
+routerPerfil.delete("/adm/:id", verifyToken, isAdmin, async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const resultado = await deletarPerfil(id);
+        console.log(resultado)
+        if (resultado[0].affectedRows === 0) {
+            return res.status(404).json({
+                mensagem: "Perfil não encontrado.",
+                codigo: "PERFIL_NOT_FOUND"
+            });
+        }
+
+        return res.status(200).json({ mensagem: "Perfil deletado com sucesso." });
+    } catch (error) {
+        return res.status(500).json({
+            mensagem: "Erro ao deletar Perfil. Esse perfil pode estar sendo usado.",
+            codigo: "DELETE_PERFIL_ERROR",
+            erro: error.message
+        });
+    }
+});
+
 
 
 export default routerPerfil;

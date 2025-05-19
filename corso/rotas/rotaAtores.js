@@ -39,6 +39,7 @@ const routerAtores = express.Router();
  *               - nome
  *               - dataNasc
  *               - vivo
+ *               - fotoAtor
  *             properties:
  *               nome:
  *                 type: string
@@ -117,6 +118,7 @@ routerAtores.post("/", verifyToken, isAdmin, upload.single('fotoAtor'), async (r
  *               - nome
  *               - dataNasc
  *               - vivo
+  *               - fotoAtor
  *             properties:
  *               nome:
  *                 type: string
@@ -444,7 +446,7 @@ routerAtores.delete("/:id", verifyToken, isAdmin, async (req, res) => {
     return res.status(200).json({ mensagem: "Ator deletado com sucesso." });
   } catch (error) {
     return res.status(500).json({
-      mensagem: "Erro ao deletar ator.",
+      mensagem: "Erro ao deletar ator. Esse ator pode estar sendo usado.",
       codigo: "DELETE_ATOR_ERROR",
       erro: error.message
     });
