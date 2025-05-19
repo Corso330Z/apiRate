@@ -31,10 +31,10 @@ const authRoutes = express.Router();
  *               email:
  *                 type: string
  *                 format: email
- *                 example: usuario@email.com
+ *                 example: joaoCorso@gmail.com
  *               senha:
  *                 type: string
- *                 example: senha123
+ *                 example: 12345
  *     responses:
  *       200:
  *         description: Login realizado com sucesso
