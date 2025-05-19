@@ -58,7 +58,7 @@ async function buscarProdutoresDoFilme(idFilme) {
         const sql = `
             SELECT 
                 p.idprodutor,
-                p.nome,
+                p.nome
             FROM produtor p
             JOIN produtorFilmes pf ON p.idprodutor = pf.produtor_idprodutor
             WHERE pf.filmes_idfilmes = ?

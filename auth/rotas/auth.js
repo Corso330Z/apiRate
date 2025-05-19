@@ -95,7 +95,7 @@ authRoutes.post("/login", async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // só em HTTPS produção
-      maxAge: 3600000, // 1 hora em ms
+      maxAge: 86400000, // 24 hora em ms
       sameSite: "lax"
     });
 

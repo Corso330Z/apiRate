@@ -22,7 +22,7 @@ async function executarQuery(sql, params = []) {
 async function atualizarSugestaoAtorPutAdm(nome, idSujetao) {
     //console.log({ nome, dataLanc, sinopse, classInd, fotoFilme, id });
     try {
-        const sql = `UPDATE sugestoesAtores SET nome = ? WHERE idatorSugestoesAtores = ?`;
+        const sql = `UPDATE sugestoesAtores SET nome = ? WHERE idsugestoesAtores = ?`;
         return await executarQuery(sql, [nome, idSujetao]);
     } catch (error) {
         console.error(error);
@@ -31,7 +31,7 @@ async function atualizarSugestaoAtorPutAdm(nome, idSujetao) {
 
 async function atualizarSugestaoAtorPut(nome, idSujetao, idpefil) {
     try {
-        const sql = `UPDATE sugestoesAtores SET nome = ? WHERE idatorSugestoesAtores = ? AND perfil_idperfil = ?`;
+        const sql = `UPDATE sugestoesAtores SET nome = ? WHERE idsugestoesAtores = ? AND perfil_idperfil = ?`;
         return await executarQuery(sql, [nome, idSujetao, idpefil]);
     } catch (error) {
         console.error(error);

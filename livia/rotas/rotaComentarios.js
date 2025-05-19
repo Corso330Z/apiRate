@@ -430,7 +430,7 @@ routerComentariosFilmes.delete("/filme/:idFilme", verifyToken, isAdmin, async (r
  * @swagger
  * /comentarios/{id}:
  *   delete:
- *     summary: Remove um comentário por ID (autenticado)
+ *     summary: Remove um comentário do usuario logado por ID do comentário (autenticado)
  *     tags: [Comentários filmes]
  *     security:
  *       - bearerAuth: []
@@ -465,42 +465,6 @@ routerComentariosFilmes.delete("/:id", verifyToken, async (req, res) => {
     return res.status(500).json({
       mensagem: "Erro ao deletar os comentários do filme.",
       codigo: "DELETE_COMENTARIOS_FILME_ERROR",
-      erro: error.message,
-    });
-  }
-});
-
-/**
- * @swagger
- * /comentarios/perfil:
- *   delete:
- *     summary: Remove todos os comentários do perfil autenticado
- *     tags: [Comentários filmes]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Comentários do perfil removidos com sucesso
- *       404:
- *         description: Nenhum comentário encontrado para o perfil
- *       500:
- *         description: Erro ao deletar comentários
- */
-routerComentariosFilmes.delete("/perfil", verifyToken, async (req, res) => {
-  const idPerfil = req.user.id;
-  try {
-    const resultado = await deletarComentariosFilmesByPerfil(idPerfil);
-    if (resultado.affectedRows == 0) {
-      return res.status(404).json({
-        mensagem: "Nenhum comentário encontrado para este perfil.",
-        codigo: "COMENTARIOS_PERFIL_NOT_FOUND",
-      });
-    }
-    return res.status(200).json({ mensagem: "Comentários do perfil removidos com sucesso." });
-  } catch (error) {
-    return res.status(500).json({
-      mensagem: "Erro ao deletar os comentários do perfil.",
-      codigo: "DELETE_COMENTARIOS_PERFIL_ERROR",
       erro: error.message,
     });
   }
