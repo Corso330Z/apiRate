@@ -31,7 +31,22 @@ import routerGenerosFilmes from "./max/rotas/rotaGenerosFilmes.js";
 import routerComentariosFilmes from "./livia/rotas/rotaComentarios.js";
 const porta = 9000;
 const app = express();
-app.use(cors());
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://rate.dev.vilhena.ifro.edu.br'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true); // Permite
+    } else {
+      callback(new Error('Not allowed by CORS')); // Bloqueia
+    }
+  },
+  credentials: true
+}));
 
 app.use(cookieParser());
 app.use(express.json());
