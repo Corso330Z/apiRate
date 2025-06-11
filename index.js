@@ -34,6 +34,7 @@ const app = express();
 
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://localhost:9000',
   'https://rate.dev.vilhena.ifro.edu.br'
 ];
 
