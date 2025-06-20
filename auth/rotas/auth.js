@@ -93,14 +93,21 @@ authRoutes.post("/login", async (req, res) => {
 
     // Envia o token como cookie HTTP only, para maior segurança
     res.cookie("token", token, {
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production', // só em HTTPS produção
       maxAge: 86400000, // 24 hora em ms
       sameSite: "Strict"
     });
 
     res.cookie("id", usuario.idperfil, {
-      httpOnly: true,
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: "Strict",
+      maxAge: 86400000, // 24 hora em ms
+    });
+
+    res.cookie("adm", usuario.adm == 1, {
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: "Strict",
       maxAge: 86400000, // 24 hora em ms
@@ -134,6 +141,16 @@ authRoutes.post("/login", async (req, res) => {
  */
 authRoutes.post("/logout", (req, res) => {
   res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: "lax"
+  });
+    res.clearCookie("adm", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: "lax"
+  });
+    res.clearCookie("id", {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: "lax"
