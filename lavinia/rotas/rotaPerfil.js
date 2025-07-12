@@ -1,7 +1,7 @@
 import express from "express";
 import upload from '../../middlewares/upload.js';
 import { adicionarPerfil } from "../servicos/perfil/adicionar.js";
-import { buscarPerfilPorId, buscarPerfilPorNome, buscarPerfil, buscarImagensPerfilPorId } from "../servicos/perfil/buscar.js";
+import { buscarPerfilPorId, buscarPerfilPorNome, buscarPerfil, buscarImagensPerfilPorId, buscarPerfilPorEmail } from "../servicos/perfil/buscar.js";
 import { deletarPerfil } from "../servicos/perfil/deletar.js";
 import { editarPerfilPut, editarPerfilPatch, transformarUserEmAdmin } from "../servicos/perfil/editar.js";
 import { validarPerfilCompleto, validarPerfilParcial } from "../validacao/validacaoPerfil.js";
@@ -307,6 +307,55 @@ routerPerfil.patch("/", verifyToken, upload.single('fotoPerfil'), async (req, re
     }
 });
 
+routerPerfil.patch("/:id", upload.single('fotoPerfil'), async (req, res) => {
+    const { id } = req.params;
+    const { nome, email, biografia, senha, adm } = req.body;
+    const fotoPerfil = req.file ? req.file.buffer : null;
+
+    const camposAtualizar = {};
+    if (nome) camposAtualizar.nome = nome;
+    if (email) camposAtualizar.email = email;
+    if (biografia) camposAtualizar.biografia = biografia;
+    if (senha) camposAtualizar.senha = senha;
+    if (adm) camposAtualizar.adm = adm;
+    if (fotoPerfil) camposAtualizar.fotoPerfil = fotoPerfil;
+
+    if (Object.keys(camposAtualizar).length === 0) {
+        return res.status(400).json({
+            mensagem: "Nenhum dado enviado para atualização.",
+            codigo: "NO_UPDATE_DATA"
+        });
+    }
+
+    const { valido, erros } = validarPerfilParcial(camposAtualizar);
+    if (!valido) {
+        return res.status(400).json({
+            mensagem: "Erro de validação dos dados parciais.",
+            codigo: "PARTIAL_VALIDATION_ERROR",
+            erro: erros
+        });
+    }
+
+    try {
+        const resultado = await editarPerfilPatch(id, camposAtualizar);
+
+        if (resultado.affectedRows > 0) {
+            return res.status(200).json({ mensagem: "Perfil atualizado com sucesso." });
+        } else {
+            return res.status(404).json({
+                mensagem: "Perfil não encontrado.",
+                codigo: "PERFIL_NOT_FOUND"
+            });
+        }
+    } catch (error) {
+        return res.status(500).json({
+            mensagem: "Erro ao atualizar Perfil.",
+            codigo: "UPDATE_PERFIL_ERROR",
+            erro: error.message
+        });
+    }
+});
+
 /**
  * @swagger
  * /perfil:
@@ -344,6 +393,24 @@ routerPerfil.get("/", async (req, res) => {
     }
 });
 
+
+routerPerfil.get("/pesquisarEmail", async (req, res) => {
+    const { email } = req.query;
+
+    try {
+        const resultado = email
+            ? await buscarPerfilPorEmail(email)
+            : await buscarPerfil();
+
+        return res.status(200).json(resultado);
+    } catch (error) {
+        return res.status(500).json({
+            mensagem: "Erro ao buscar Perfil.",
+            codigo: "GET_PERFIL_ERROR",
+            erro: error.message
+        });
+    }
+});
 
 /**
  * @swagger

@@ -43,8 +43,8 @@ async function buscarPerfilPorNome(nome) {
 
 async function buscarPerfilPorEmail(email) {
     try {
-        const sql = `SELECT idperfil, nome, email, biografia, senha, adm FROM perfil WHERE email = ?`;
-        return await executarQuery(sql, [email]);
+        const sql = `SELECT idperfil, nome, email, biografia, senha, adm FROM perfil WHERE email LIKE ?`;
+        return await executarQuery(sql, [`%${email}%`]);
     } catch (error) {
         console.error(error);
     }
