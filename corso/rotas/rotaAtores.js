@@ -51,6 +51,9 @@ const routerAtores = express.Router();
  *               fotoAtor:
  *                 type: string
  *                 format: binary
+ *               dataObito:
+ *                 type: string
+ *                 format: date
  *     responses:
  *       201:
  *         description: Ator adicionado com sucesso
@@ -60,7 +63,7 @@ const routerAtores = express.Router();
  *         description: Erro interno no servidor
  */
 routerAtores.post("/", verifyToken, isAdmin, upload.single('fotoAtor'), async (req, res) => {
-  let { nome, dataNasc, vivo } = req.body;
+  let { nome, dataNasc, dataObito, vivo } = req.body;
   vivo = vivo === 'true' || vivo === true ? 1 : 0;
   const fotoAtor = req.file ? req.file.buffer : null;
 
@@ -75,7 +78,7 @@ routerAtores.post("/", verifyToken, isAdmin, upload.single('fotoAtor'), async (r
   }
 
   try {
-    const resultado = await adicionarAtor(nome, dataNasc, vivo, fotoAtor);
+    const resultado = await adicionarAtor(nome, dataNasc, dataObito, vivo, fotoAtor);
     //console.log(resultado)
     if (resultado[0].affectedRows > 0) {
       return res.status(201).json({ mensagem: "Ator adicionado com sucesso." });

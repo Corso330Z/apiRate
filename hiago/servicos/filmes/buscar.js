@@ -41,6 +41,33 @@ async function buscarFilmesPorNome(nome) {
     }
 }
 
+async function buscarFilmesPorGenero(genero) {
+  try {
+    const sql = `
+      SELECT 
+        f.idfilmes,
+        f.nomeFilme,
+        f.dataLanc,
+        f.sinopse,
+        f.classInd
+      FROM 
+        filmes f
+      JOIN 
+        generosFilmes gf ON gf.filmes_idfilmes = f.idfilmes
+      JOIN 
+        generos g ON g.idgeneros = gf.generos_idgeneros
+      WHERE 
+        LOWER(g.nome) LIKE LOWER(?);
+    `;
+    
+    return await executarQuery(sql, [`%${genero}%`]);
+  } catch (error) {
+    console.error("Erro ao buscar filmes por gênero:", error.message);
+    throw error;
+  }
+}
+
+
 async function buscarImagensFilmePorId(id) {
     try {
         const sql = `SELECT fotoFilme FROM filmes WHERE idfilmes = ?`;
@@ -50,4 +77,4 @@ async function buscarImagensFilmePorId(id) {
     }
 }
 
-export { buscarFilmePorId, buscarFilmesPorNome, buscarFilmes, buscarImagensFilmePorId };
+export { buscarFilmePorId, buscarFilmesPorNome, buscarFilmes, buscarImagensFilmePorId, buscarFilmesPorGenero };

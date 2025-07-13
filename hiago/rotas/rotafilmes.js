@@ -1,7 +1,7 @@
 import express from "express";
 import upload from '../../middlewares/upload.js';
 import { adicionarFilme } from "../servicos/filmes/adicionar.js";
-import { buscarFilmePorId, buscarFilmesPorNome, buscarFilmes, buscarImagensFilmePorId } from "../servicos/filmes/buscar.js";
+import { buscarFilmePorId, buscarFilmesPorNome, buscarFilmes, buscarImagensFilmePorId, buscarFilmesPorGenero } from "../servicos/filmes/buscar.js";
 import { deletarFilme } from "../servicos/filmes/deletar.js";
 import { editarFilmePut, editarFilmePatch } from "../servicos/filmes/editar.js";
 import { validarFilmeCompleto, validarFilmeParcial } from "../validacao/validacaoFilmes.js";
@@ -308,6 +308,23 @@ routerFilmes.get("/", async (req, res) => {
   }
 });
 
+
+routerFilmes.get("/generos", async (req, res) => {
+  const { genero } = req.query;
+  try {
+    const resultado = genero
+      ? await buscarFilmesPorGenero(genero)
+      : await buscarFilmes();
+    return res.status(200).json(resultado);
+  } catch (error) {
+    return res.status(500).json({
+      mensagem: "Erro ao buscar filmes por genero.",
+      codigo: "GET_FILMES_ERROR",
+      erro: error.message
+    });
+  }
+});
+
 /**
  * @swagger
  * /filmes/{id}:
@@ -350,6 +367,7 @@ routerFilmes.get("/:id", async (req, res) => {
     });
   }
 });
+
 
 /**
  * @swagger

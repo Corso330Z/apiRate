@@ -29,6 +29,7 @@ import routerDiretoresFilmes from "./livia/rotas/rotaDiretoresFilmes.js";
 import routerGenero from "./max/rotas/rotaGeneros.js";
 import routerGenerosFilmes from "./max/rotas/rotaGenerosFilmes.js";
 import routerComentariosFilmes from "./livia/rotas/rotaComentarios.js";
+
 const porta = 9000;
 const app = express();
 
@@ -48,6 +49,7 @@ app.use(cors({
   },
   credentials: true
 }));
+
 
 app.use(cookieParser());
 app.use(express.json());
