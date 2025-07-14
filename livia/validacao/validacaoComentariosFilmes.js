@@ -18,16 +18,6 @@ export async function validarComentarioFilme({ idPerfil, idFilme, comentario }) 
     };
   }
 
-  if (!Number.isInteger(idPerfil) || !Number.isInteger(idFilme)) {
-    return {
-      status: 400,
-      erro: {
-        mensagem: "'idPerfil' e 'idFilme' devem ser números inteiros.",
-        codigo: "TIPO_DADO_INVALIDO"
-      }
-    };
-  }
-
   if (typeof comentario !== 'string' || comentario.trim().length === 0) {
     return {
       status: 400,

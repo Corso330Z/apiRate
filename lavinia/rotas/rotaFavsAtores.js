@@ -64,8 +64,8 @@ routerFavoritosAtores.get("/", async (req, res) => {
  *       500:
  *         description: Erro ao buscar a lista de atores favoritos do perfil
  */
-routerFavoritosAtores.get("/perfil/meuPerfil", verifyToken, async (req, res) => {
-  const idPerfil = req.user.id;
+routerFavoritosAtores.get("/perfil/:idPerfil", async (req, res) => {
+  const idPerfil = req.params.idPerfil;
   try {
     const resultado = await buscarFavoritosAtoresByIdPerfil(idPerfil);
     return res.status(200).json(resultado);
@@ -271,9 +271,9 @@ routerFavoritosAtores.post("/adm", verifyToken, isAdmin, async (req, res) => {
  *       500:
  *         description: Erro ao criar a relação entre perfil e ator favorito
  */
-routerFavoritosAtores.post("/", verifyToken, validarIdAtorBody, async (req, res) => {
+routerFavoritosAtores.post("/:id", async (req, res) => {
   const { idAtor } = req.body;
-  const idPerfil = req.user.id;
+  const idPerfil = req.params.id;
   try {
     const erroValidacao = await validarRelacaoFavoritosAtor({ idAtor, idPerfil });
 
@@ -410,7 +410,7 @@ routerFavoritosAtores.delete("/perfil", verifyToken, async (req, res) => {
  *       500:
  *         description: Erro ao deletar a relação entre perfil e ator
  */
-routerFavoritosAtores.delete("/perfilEAtor/:idPerfil/:idAtor", verifyToken, async (req, res) => {
+routerFavoritosAtores.delete("/perfilEAtor/:idPerfil/:idAtor", async (req, res) => {
   const { idAtor, idPerfil } = req.params;
   try {
     const resultado = await deletarFavoritosAtoresByAtorAndPerfil(idAtor, idPerfil);

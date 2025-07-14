@@ -18,15 +18,6 @@ export async function validarRelacaoFavoritosAtor({ idAtor, idPerfil }) {
     };
   }
 
-  if (!Number.isInteger(idAtor) || !Number.isInteger(idPerfil)) {
-    return {
-      status: 400,
-      erro: {
-        mensagem: "'idAtor' e 'idPerfil' devem ser números inteiros.",
-        codigo: "TIPO_DADO_INVALIDO"
-      }
-    };
-  }
 
   try {
     const ator = await buscarAtorPorId(idAtor);

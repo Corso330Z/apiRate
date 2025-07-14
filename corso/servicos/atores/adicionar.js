@@ -17,7 +17,7 @@ async function adicionarAtor(nome, dataNasc, dataObito, vivo, fotoAtor) {
     try{        
         //console.log(nome, dataNasc, vivo, fotoAtor)
         const sql = `INSERT INTO atores (nome, dataNasc, dataObito, vivo, fotoAtor) VALUES (?, ?, ?, ?, ?);`;
-        return await executarQuery(sql, [nome, dataNasc, dataObito, vivo, fotoAtor]);
+        return await executarQuery(sql, [nome, dataNasc, dataObito || null, vivo, fotoAtor]);
     } catch(error) {
         console.error(error);
     }

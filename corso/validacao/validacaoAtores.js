@@ -1,6 +1,6 @@
 import { buscarAtorPorNome } from "../servicos/atores/buscar.js";
 
-async function validarAtorCompleto({ nome, dataNasc, vivo }) {
+async function validarAtorCompleto( nome, dataNasc, vivo ) {
   const erros = [];
 
   if (!nome || typeof nome !== 'string') {
@@ -16,8 +16,8 @@ async function validarAtorCompleto({ nome, dataNasc, vivo }) {
   if (!dataNasc || isNaN(Date.parse(dataNasc))) {
     erros.push("A data de nascimento é obrigatória e deve ser válida.");
   }
-
-  if (!vivo || isNaN(parseInt(vivo))) {
+  console.log(!vivo)
+  if (isNaN(parseInt(vivo))) {
     erros.push("A opção se o ator está vivo deve ser escolhida, com 1 para vivo e 0 para morto.");
   }
 

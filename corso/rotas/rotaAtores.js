@@ -62,12 +62,12 @@ const routerAtores = express.Router();
  *       500:
  *         description: Erro interno no servidor
  */
-routerAtores.post("/", verifyToken, isAdmin, upload.single('fotoAtor'), async (req, res) => {
+routerAtores.post("/", upload.single('fotoAtor'), async (req, res) => {
   let { nome, dataNasc, dataObito, vivo } = req.body;
   vivo = vivo === 'true' || vivo === true ? 1 : 0;
   const fotoAtor = req.file ? req.file.buffer : null;
 
-  const { valido, erros } = await validarAtorCompleto({ nome, dataNasc, vivo });
+  const { valido, erros } = await validarAtorCompleto(nome, dataNasc, vivo );
 
   if (!valido) {
     return res.status(400).json({
@@ -432,7 +432,7 @@ routerAtores.get("/fotoAtor/:id", async (req, res) => {
  *         description: Erro ao deletar ator
  */
 
-routerAtores.delete("/:id", verifyToken, isAdmin, async (req, res) => {
+routerAtores.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {

@@ -49,7 +49,8 @@ async function buscarFilmesPorGenero(genero) {
         f.nomeFilme,
         f.dataLanc,
         f.sinopse,
-        f.classInd
+        f.classInd,
+        g.nome AS nomeGenero 
       FROM 
         filmes f
       JOIN 

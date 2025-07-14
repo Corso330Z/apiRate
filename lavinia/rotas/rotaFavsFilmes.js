@@ -262,9 +262,9 @@ routerFavoritosFilmes.post("/adm", verifyToken, isAdmin, async (req, res) => {
  *       500:
  *         description: Erro ao adicionar aos favoritos.
  */
-routerFavoritosFilmes.post("/", verifyToken, validarIdFilmeBody, async (req, res) => {
+routerFavoritosFilmes.post("/:idPerfil", async (req, res) => {
   const { idFilme } = req.body;
-  const idPerfil = req.user.id;
+  const idPerfil = req.params.idPerfil;
   try {
     const erroValidacao = await validarRelacaoFavoritosFilme({ idFilme, idPerfil });
 
@@ -400,7 +400,7 @@ routerFavoritosFilmes.delete("/perfil", verifyToken, async (req, res) => {
  *       500:
  *         description: Erro ao deletar a relação.
  */
-routerFavoritosFilmes.delete("/perfilEFilme/:idPerfil/:idFilme", verifyToken, async (req, res) => {
+routerFavoritosFilmes.delete("/perfilEFilme/:idPerfil/:idFilme", async (req, res) => {
   const { idFilme, idPerfil } = req.params;
   try {
     const resultado = await deletarFavoritosFilmesByFilmeAndPerfil(idFilme, idPerfil);

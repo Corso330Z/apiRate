@@ -1,6 +1,6 @@
 import { buscarAtorPorNome } from "../../corso/servicos/atores/buscar.js";
 
-async function validarSugestaoAtorCompleto({ nome }) {
+async function validarSugestaoAtorCompleto(nome) {
   const erros = [];
 
   if (!nome || typeof nome !== 'string') {

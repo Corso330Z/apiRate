@@ -48,7 +48,7 @@ routerSugestaoAtores.post("/", verifyToken, async (req, res) => {
     const { nome } = req.body;
 
 
-    const { valido, erros } = await validarSugestaoAtorCompleto({ nome });
+    const { valido, erros } = await validarSugestaoAtorCompleto( nome );
 
     if (!valido) {
         return res.status(400).json({

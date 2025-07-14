@@ -18,15 +18,7 @@ export async function validarRelacaoFavoritosFilme({ idFilme, idPerfil }) {
     };
   }
 
-  if (!Number.isInteger(idFilme) || !Number.isInteger(idPerfil)) {
-    return {
-      status: 400,
-      erro: {
-        mensagem: "'idFilme' e 'idPerfil' devem ser números inteiros.",
-        codigo: "TIPO_DADO_INVALIDO"
-      }
-    };
-  }
+
 
   try {
     const filme = await buscarFilmePorId(idFilme);

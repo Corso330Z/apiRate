@@ -5,7 +5,7 @@ import { buscarFilmePorId, buscarFilmesPorNome, buscarFilmes, buscarImagensFilme
 import { deletarFilme } from "../servicos/filmes/deletar.js";
 import { editarFilmePut, editarFilmePatch } from "../servicos/filmes/editar.js";
 import { validarFilmeCompleto, validarFilmeParcial } from "../validacao/validacaoFilmes.js";
-
+import { deletarFavoritosFilmesByFilme } from "../../lavinia/servicos/favoritosFilmes/deletar.js";
 import { verifyToken, isAdmin } from "../../middlewares/verifyToken.js"
 
 const routerFilmes = express.Router();
@@ -440,10 +440,11 @@ routerFilmes.get("/imagem/:id", async (req, res) => {
  *       500:
  *         description: Erro ao deletar filme
  */
-routerFilmes.delete("/:id", verifyToken, isAdmin, async (req, res) => {
+routerFilmes.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
+    await deletarFavoritosFilmesByFilme(id);
     const resultado = await deletarFilme(id);
 
     if (resultado.affectedRows === 0) {

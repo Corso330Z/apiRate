@@ -306,9 +306,9 @@ routerComentariosFilmes.post("/adm", verifyToken, isAdmin, async (req, res) => {
  *       500:
  *         description: Erro ao criar o comentário
  */
-routerComentariosFilmes.post("/", verifyToken, async (req, res) => {
+routerComentariosFilmes.post("/:idPerfil", async (req, res) => {
+  const idPerfil = req.params.idPerfil;
   const { idFilme, comentario } = req.body;
-  const idPerfil = req.user.id;
   try {
     const erroValidacao = await validarComentarioFilme({ idFilme, idPerfil, comentario });
 
