@@ -189,7 +189,7 @@ routerAtoresFilmes.get("/atorFilme/:idFilme/:idAtor", async (req, res) => {
  *       500:
  *         description: Erro interno ao criar a relação.
  */
-routerAtoresFilmes.post("/", verifyToken, isAdmin, validarCriacaoRelacaoAtorFilme, async (req, res) => {
+routerAtoresFilmes.post("/", async (req, res) => {
   const { idFilme, idAtor } = req.body;
 
   try {

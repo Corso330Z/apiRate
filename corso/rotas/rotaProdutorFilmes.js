@@ -185,7 +185,7 @@ routerProdutorFilmes.get("/produtorFilme/:idFilme/:idProdutor", async (req, res)
  *       500:
  *         description: Erro interno ao criar a relação.
  */
-routerProdutorFilmes.post("/", verifyToken, isAdmin, validarCriacaoRelacaoProdutorFilme, async (req, res) => {
+routerProdutorFilmes.post("/", async (req, res) => {
   const { idFilme, idProdutor } = req.body;
 
   try {

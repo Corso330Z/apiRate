@@ -61,13 +61,13 @@ const routerFilmes = express.Router();
  *       500:
  *         description: Erro interno ao adicionar filme
  */
-routerFilmes.post("/", verifyToken, isAdmin, upload.single('fotoFilme'), async (req, res) => {
+routerFilmes.post("/", upload.single('fotoFilme'), async (req, res) => {
   const { nome, dataLanc, sinopse, classInd } = req.body;
   const fotoFilme = req.file ? req.file.buffer : null;
 
   const { valido, erros } = await validarFilmeCompleto({ nome, dataLanc, sinopse, classInd });
 
-  if (!valido) {
+  if (!valido || !fotoFilme) {
     return res.status(400).json({
       mensagem: "Erro de validação dos dados.",
       codigo: "VALIDATION_ERROR",
@@ -78,7 +78,7 @@ routerFilmes.post("/", verifyToken, isAdmin, upload.single('fotoFilme'), async (
   try {
     const resultado = await adicionarFilme(nome, dataLanc, sinopse, classInd, fotoFilme);
     if (resultado[0].affectedRows > 0) {
-      return res.status(201).json({ mensagem: "Filme adicionado com sucesso." });
+      return res.status(201).json(resultado[0]);
     } else {
       return res.status(404).json({ mensagem: "Não foi possivel, adicionar filme." });
     }
