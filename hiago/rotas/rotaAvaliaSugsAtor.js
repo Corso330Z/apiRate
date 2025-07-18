@@ -6,7 +6,6 @@ import {
 import {
     adicionarAvaliacaoSugsAtor,
 } from "../servicos/avaliaSugsAtor/adicionar.js";
-
 import { atualizarAvaliacaoSugsAtorPatch } from "../servicos/avaliaSugsAtor/atualizar.js";
 import { deletarAvaliacaoSugestaoAtor, deletarAvaliacaoSugestaoAtorAdm} from "../servicos/avaliaSugsAtor/deletar.js";
 import { validarAvaliacaoSugsAtorCompleto, validarAvaliacaoSugsAtorParcial } from "../validacao/validacaoAvSugsAtor.js";
